@@ -14,7 +14,7 @@ ROOT.gROOT.SetBatch(1)
 
 from BaseValidation import *
 from GEMDigiValidation import *
-
+from ME0DigiValidation import *
 
 
 if __name__ == "__main__":  
@@ -22,34 +22,38 @@ if __name__ == "__main__":
   ## Style
   gStyle.SetStatStyle(0);
   plotter = DigiPlotter()
-  
-  gemGEMDigiOccupancyXY(plotter)
-  gemGEMDigiOccupancyStripPhi(plotter)
-  gemGEMDigiOccupancyStrip(plotter)
-  gemGEMDigiBX(plotter)
-  gemGEMDigiOccupancyRZ(plotter)
-  
-  gemGEMPadOccupancyXY(plotter)
-  gemGEMPadOccupancyPadPhi(plotter)
-  gemGEMPadOccupancyPad(plotter)
-  gemGEMPadBX(plotter)
-  gemGEMPadOccupancyRZ(plotter)
 
-  gemGEMCoPadOccupancyXY(plotter)
-  gemGEMCoPadOccupancyCoPadPhi(plotter)
-  gemGEMCoPadOccupancyCoPad(plotter)
-  gemGEMCoPadBX(plotter)
-  gemGEMCoPadOccupancyRZ(plotter)
+  me0DigiOccupancyXY(plotter)
+  me0DigiOccupancyRZ(plotter)
+  me0DigiDeltaX(plotter)
   
-  simTrackDigiMatchingEta(plotter)
-  simTrackDigiMatchingPhi(plotter)
-  simTrackDigiMatchingLX(plotter)
-  simTrackDigiMatchingLY(plotter)
-  simTrackPadMatchingEta(plotter)
-  simTrackPadMatchingPhi(plotter)
-  simTrackPadMatchingLX(plotter)
-  simTrackPadMatchingLY(plotter)
-  simTrackCoPadMatchingEta(plotter)
-  simTrackCoPadMatchingPhi(plotter)
-  simTrackCoPadMatchingLX(plotter)
-  simTrackCoPadMatchingLY(plotter)
+  #gemGEMDigiOccupancyXY(plotter)
+  #gemGEMDigiOccupancyStripPhi(plotter)
+  #gemGEMDigiOccupancyStrip(plotter)
+  #gemGEMDigiBX(plotter)
+  #gemGEMDigiOccupancyRZ(plotter)
+  
+  #gemGEMPadOccupancyXY(plotter)
+  #gemGEMPadOccupancyPadPhi(plotter)
+  #gemGEMPadOccupancyPad(plotter)
+  #gemGEMPadBX(plotter)
+  #gemGEMPadOccupancyRZ(plotter)
+
+  #gemGEMCoPadOccupancyXY(plotter)
+  #gemGEMCoPadOccupancyCoPadPhi(plotter)
+  #gemGEMCoPadOccupancyCoPad(plotter)
+  #gemGEMCoPadBX(plotter)
+  #gemGEMCoPadOccupancyRZ(plotter)
+  
+  #simTrackDigiMatchingEta(plotter)
+  #simTrackDigiMatchingPhi(plotter)
+  #simTrackDigiMatchingLX(plotter)
+  #simTrackDigiMatchingLY(plotter)
+  #simTrackPadMatchingEta(plotter)
+  #simTrackPadMatchingPhi(plotter)
+  #simTrackPadMatchingLX(plotter)
+  #simTrackPadMatchingLY(plotter)
+  #simTrackCoPadMatchingEta(plotter)
+  #simTrackCoPadMatchingPhi(plotter)
+  #simTrackCoPadMatchingLX(plotter)
+  #simTrackCoPadMatchingLY(plotter)

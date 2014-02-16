@@ -40,6 +40,8 @@
 ///Data Format
 #include "DataFormats/GEMDigi/interface/GEMDigiCollection.h"
 #include "DataFormats/GEMDigi/interface/GEMCSCPadDigiCollection.h"
+#include "DataFormats/GEMDigi/interface/ME0DigiCollection.h"
+#include "DataFormats/GEMDigi/interface/ME0DigiPreRecoCollection.h"
 #include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
 #include "DataFormats/MuonDetId/interface/GEMDetId.h"
@@ -58,6 +60,7 @@
 #include "Geometry/RPCGeometry/interface/RPCGeometry.h"
 #include "Geometry/RPCGeometry/interface/RPCGeomServ.h"
 #include "Geometry/GEMGeometry/interface/GEMGeometry.h"
+#include "Geometry/GEMGeometry/interface/ME0Geometry.h"
 #include "Geometry/GEMGeometry/interface/GEMEtaPartition.h"
 #include "Geometry/GEMGeometry/interface/GEMEtaPartitionSpecs.h"
 #include "Geometry/CommonTopologies/interface/StripTopology.h"
@@ -74,6 +77,19 @@
 //
 // class declaration
 //
+
+struct MyGEMSimHit
+{  
+  Int_t eventNumber;
+  Int_t detUnitId, particleType;
+  Float_t x, y, energyLoss, pabs, timeOfFlight;
+  Int_t region, ring, station, layer, chamber, roll;
+  Float_t globalR, globalEta, globalPhi, globalX, globalY, globalZ;
+  Int_t strip;
+  Float_t Phi_0, DeltaPhi, R_0;
+  Int_t countMatching;
+};
+
 
 struct MyRPCDigi
 {
@@ -92,7 +108,10 @@ struct MyGEMDigi
    Short_t strip, bx;
    Float_t x, y;
    Float_t g_r, g_eta, g_phi, g_x, g_y, g_z;
+   Float_t x_sim, y_sim;
+   Float_t g_eta_sim, g_phi_sim, g_x_sim, g_y_sim, g_z_sim;
 };
+
 
 struct MyGEMCSCPadDigis
 {
@@ -132,6 +151,7 @@ struct MySimTrack
   Float_t gem_trk_eta, gem_trk_phi, gem_trk_rho;
 };
 
+
 class MuonDigiAnalyzer : public edm::EDAnalyzer 
 {
 public:
@@ -154,38 +174,50 @@ private:
   
   void bookRPCDigiTree();
   void bookGEMDigiTree();
+  void bookME0DigiTree();
+  void bookME0SimHitsTree();
   void bookGEMCSCPadDigiTree();
   void bookGEMCSCCoPadDigiTree();
   void bookSimTracksTree();
 
   void analyzeRPC();
   void analyzeGEM();
+  //void analyzeME0(const edm::Event& iEvent);
+  void analyzeME0PreReco(const edm::Event& iEvent);
   void analyzeGEMCSCPad();  
   void analyzeGEMCSCCoPad();  
   bool isSimTrackGood(const SimTrack &);
+  bool isGEMDigiMatched(MyGEMDigi gem_recHit, MyGEMSimHit gem_sh);
   void analyzeTracks(edm::ParameterSet, const edm::Event&, const edm::EventSetup&);
   void buildLUT();
   std::pair<int,int> getClosestChambers(int region, float phi);
 
   TTree* rpc_tree_;
   TTree* gem_tree_;
+  TTree* me0_tree_;
+  TTree* me0_sh_tree_;
   TTree* gemcscpad_tree_;
   TTree* gemcsccopad_tree_;
   TTree* track_tree_;
 
+  edm::Handle<edm::PSimHitContainer> ME0Hits;
   edm::Handle<RPCDigiCollection> rpc_digis;
   edm::Handle<GEMDigiCollection> gem_digis;  
+  edm::Handle<ME0DigiPreRecoCollection> me0_digis;  
   edm::Handle<GEMCSCPadDigiCollection> gemcscpad_digis;
   edm::Handle<GEMCSCPadDigiCollection> gemcsccopad_digis;
   edm::Handle<edm::SimTrackContainer> sim_tracks;
   edm::Handle<edm::SimVertexContainer> sim_vertices;
   edm::ESHandle<GEMGeometry> gem_geo_;
+  edm::ESHandle<ME0Geometry> me0_geo_;
   edm::ESHandle<RPCGeometry> rpc_geo_;
 
   edm::ParameterSet cfg_;
 
+  edm::InputTag me0SimHitInput_;
   edm::InputTag simTrackInput_;
   edm::InputTag gemDigiInput_;
+  edm::InputTag me0DigiInput_;
   edm::InputTag rpcDigiInput_;
   edm::InputTag gemPadDigiInput_;
   edm::InputTag gemCoPadDigiInput_;
@@ -197,10 +229,13 @@ private:
   double simTrackOnlyMuon_;
 
   const GEMGeometry* gem_geometry_;
+  const ME0Geometry* me0_geometry_;
   const RPCGeometry* rpc_geometry_;
 
   MyRPCDigi rpc_digi_;
   MyGEMDigi gem_digi_;
+  MyGEMDigi me0_digi_;
+  MyGEMSimHit me0_sh;
   MyGEMCSCPadDigis gemcscpad_digi_;
   MyGEMCSCCoPadDigis gemcsccopad_digi_;
   MySimTrack track_;
@@ -229,14 +264,21 @@ MuonDigiAnalyzer::MuonDigiAnalyzer(const edm::ParameterSet& ps)
   cfg_ = ps.getParameter<edm::ParameterSet>("simTrackMatching");
   auto simTrack = cfg_.getParameter<edm::ParameterSet>("simTrack");
   simTrackInput_ = simTrack.getParameter<edm::InputTag>("input");
+  std::cout<<simTrackInput_.label()<<std::endl;
   simTrackMinPt_ = simTrack.getParameter<double>("minPt");
   simTrackMaxPt_ = simTrack.getParameter<double>("maxPt");
   simTrackMinEta_ = simTrack.getParameter<double>("minEta");
   simTrackMaxEta_ = simTrack.getParameter<double>("maxEta");
   simTrackOnlyMuon_ = simTrack.getParameter<bool>("onlyMuon");
 
+  auto me0SimHit = cfg_.getParameter<edm::ParameterSet>("me0SimHit");
+  me0SimHitInput_ = me0SimHit.getParameter<edm::InputTag>("input");
+
   auto gemDigi = cfg_.getParameter<edm::ParameterSet>("gemStripDigi");
   gemDigiInput_ = gemDigi.getParameter<edm::InputTag>("input");
+
+  auto me0Digi = cfg_.getParameter<edm::ParameterSet>("me0StripDigi");
+  me0DigiInput_ = me0Digi.getParameter<edm::InputTag>("input");
   
   auto rpcDigi = cfg_.getParameter<edm::ParameterSet>("rpcStripDigi");
   rpcDigiInput_ = rpcDigi.getParameter<edm::InputTag>("input");
@@ -249,6 +291,8 @@ MuonDigiAnalyzer::MuonDigiAnalyzer(const edm::ParameterSet& ps)
 
   bookRPCDigiTree();
   bookGEMDigiTree();
+  bookME0DigiTree();
+  bookME0SimHitsTree();
   bookGEMCSCPadDigiTree();
   bookGEMCSCCoPadDigiTree();
   bookSimTracksTree();
@@ -279,6 +323,13 @@ void MuonDigiAnalyzer::beginRun(edm::Run const&, edm::EventSetup const& iSetup)
       << "+++ Info: RPC geometry is unavailable. +++\n";
   }
 
+  try {
+    iSetup.get<MuonGeometryRecord>().get(me0_geo_);
+    me0_geometry_ = &*me0_geo_;
+  } catch (edm::eventsetup::NoProxyException<ME0Geometry>& e) {
+    hasME0Geometry_ = false;
+    LogDebug("MuonDigiAnalyzer") << "+++ Info: ME0 geometry is unavailable. +++\n";
+  }
 
   if(hasGEMGeometry_) {
     
@@ -309,22 +360,27 @@ void MuonDigiAnalyzer::beginRun(edm::Run const&, edm::EventSetup const& iSetup)
 
 void MuonDigiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  iEvent.getByLabel(rpcDigiInput_, rpc_digis);
-  if (hasRPCGeometry_) analyzeRPC();
-
-  iEvent.getByLabel(gemDigiInput_, gem_digis);
-  if(hasGEMGeometry_) analyzeGEM();
-  
-  iEvent.getByLabel(gemPadDigiInput_, gemcscpad_digis);
-  if(hasGEMGeometry_) analyzeGEMCSCPad();  
-  
-  iEvent.getByLabel(gemCoPadDigiInput_, gemcsccopad_digis);
-  if(hasGEMGeometry_) analyzeGEMCSCCoPad();  
-
   iEvent.getByLabel(simTrackInput_, sim_tracks);
   iEvent.getByLabel(simTrackInput_, sim_vertices);
 
-  if(hasGEMGeometry_) analyzeTracks(cfg_,iEvent,iSetup);  
+  //iEvent.getByLabel(rpcDigiInput_, rpc_digis);
+  //if (hasRPCGeometry_) analyzeRPC();
+
+  //iEvent.getByLabel(gemDigiInput_, gem_digis);
+  //if(hasGEMGeometry_) analyzeGEM();
+
+  iEvent.getByLabel(me0SimHitInput_, ME0Hits);
+
+  iEvent.getByLabel(me0DigiInput_, me0_digis);
+  if(hasME0Geometry_) analyzeME0PreReco(iEvent);
+
+  //iEvent.getByLabel(gemPadDigiInput_, gemcscpad_digis);
+  //if(hasGEMGeometry_) analyzeGEMCSCPad();  
+  
+  //iEvent.getByLabel(gemCoPadDigiInput_, gemcsccopad_digis);
+  //if(hasGEMGeometry_) analyzeGEMCSCCoPad();  
+
+  //if(hasGEMGeometry_) analyzeTracks(cfg_,iEvent,iSetup);  
 }
 
 void MuonDigiAnalyzer::bookRPCDigiTree()
@@ -372,6 +428,67 @@ void MuonDigiAnalyzer::bookGEMDigiTree()
   gem_tree_->Branch("g_x", &gem_digi_.g_x);
   gem_tree_->Branch("g_y", &gem_digi_.g_y);
   gem_tree_->Branch("g_z", &gem_digi_.g_z);
+}
+
+void MuonDigiAnalyzer::bookME0SimHitsTree()
+{
+  edm::Service< TFileService > fs;
+  me0_sh_tree_ = fs->make< TTree >("ME0SimHits", "ME0SimHits");
+  me0_sh_tree_->Branch("eventNumber", &me0_sh.eventNumber);
+  me0_sh_tree_->Branch("detUnitId", &me0_sh.detUnitId);
+  me0_sh_tree_->Branch("particleType", &me0_sh.particleType);
+  me0_sh_tree_->Branch("x", &me0_sh.x);
+  me0_sh_tree_->Branch("y", &me0_sh.y);
+  me0_sh_tree_->Branch("energyLoss", &me0_sh.energyLoss);
+  me0_sh_tree_->Branch("pabs", &me0_sh.pabs);
+  me0_sh_tree_->Branch("timeOfFlight", &me0_sh.timeOfFlight);
+  me0_sh_tree_->Branch("region", &me0_sh.region);
+  me0_sh_tree_->Branch("ring", &me0_sh.ring);
+  me0_sh_tree_->Branch("station", &me0_sh.station);
+  me0_sh_tree_->Branch("chamber", &me0_sh.chamber);
+  me0_sh_tree_->Branch("layer", &me0_sh.layer);
+  me0_sh_tree_->Branch("roll", &me0_sh.roll);
+  me0_sh_tree_->Branch("globalR", &me0_sh.globalR);
+  me0_sh_tree_->Branch("globalEta", &me0_sh.globalEta);
+  me0_sh_tree_->Branch("globalPhi", &me0_sh.globalPhi);
+  me0_sh_tree_->Branch("globalX", &me0_sh.globalX);
+  me0_sh_tree_->Branch("globalY", &me0_sh.globalY);
+  me0_sh_tree_->Branch("globalZ", &me0_sh.globalZ);
+  me0_sh_tree_->Branch("strip", &me0_sh.strip);
+  me0_sh_tree_->Branch("Phi_0", &me0_sh.Phi_0);
+  me0_sh_tree_->Branch("DeltaPhi", &me0_sh.DeltaPhi);
+  me0_sh_tree_->Branch("R_0", &me0_sh.R_0);
+  me0_sh_tree_->Branch("countMatching", &me0_sh.countMatching);
+}
+
+void MuonDigiAnalyzer::bookME0DigiTree()
+{
+  edm::Service<TFileService> fs;
+  me0_tree_ = fs->make<TTree>("ME0DigiTree", "ME0DigiTree");
+  me0_tree_->Branch("detId", &me0_digi_.detId);
+  me0_tree_->Branch("region", &me0_digi_.region);
+  me0_tree_->Branch("ring", &me0_digi_.ring);
+  me0_tree_->Branch("station", &me0_digi_.station);
+  me0_tree_->Branch("layer", &me0_digi_.layer);
+  me0_tree_->Branch("chamber", &me0_digi_.chamber);
+  me0_tree_->Branch("roll", &me0_digi_.roll);
+  me0_tree_->Branch("strip", &me0_digi_.strip);
+  me0_tree_->Branch("bx", &me0_digi_.bx);
+  me0_tree_->Branch("x", &me0_digi_.x);
+  me0_tree_->Branch("y", &me0_digi_.y);
+  me0_tree_->Branch("g_r", &me0_digi_.g_r);
+  me0_tree_->Branch("g_eta", &me0_digi_.g_eta);
+  me0_tree_->Branch("g_phi", &me0_digi_.g_phi);
+  me0_tree_->Branch("g_x", &me0_digi_.g_x);
+  me0_tree_->Branch("g_y", &me0_digi_.g_y);
+  me0_tree_->Branch("g_z", &me0_digi_.g_z);
+  me0_tree_->Branch("x_sim", &me0_digi_.x_sim);
+  me0_tree_->Branch("y_sim", &me0_digi_.y_sim);
+  me0_tree_->Branch("globalEta_sim", &me0_digi_.g_eta_sim);
+  me0_tree_->Branch("globalPhi_sim", &me0_digi_.g_phi_sim);
+  me0_tree_->Branch("globalX_sim", &me0_digi_.g_x_sim);
+  me0_tree_->Branch("globalY_sim", &me0_digi_.g_y_sim);
+  me0_tree_->Branch("globalZ_sim", &me0_digi_.g_z_sim);
 }
 
 void MuonDigiAnalyzer::bookGEMCSCPadDigiTree()
@@ -454,6 +571,34 @@ void MuonDigiAnalyzer::bookGEMCSCCoPadDigiTree()
    track_tree_->Branch("has_gem_pad_l1",&track_.has_gem_pad_l1);
    track_tree_->Branch("has_gem_pad_l2",&track_.has_gem_pad_l2);
  }
+
+bool MuonDigiAnalyzer::isGEMDigiMatched(MyGEMDigi gem_dg, MyGEMSimHit gem_sh)
+{
+
+  Int_t gem_region = gem_dg.region;
+  Int_t gem_layer = gem_dg.layer;
+  Int_t gem_station = gem_dg.station;
+  Int_t gem_chamber = gem_dg.chamber;
+  Int_t gem_roll = gem_dg.roll;
+  //Int_t gem_strip = gem_dg.strip;
+   
+  Int_t gem_sh_region = gem_sh.region;
+  Int_t gem_sh_layer = gem_sh.layer;
+  Int_t gem_sh_station = gem_sh.station;
+  Int_t gem_sh_chamber = gem_sh.chamber;
+  Int_t gem_sh_roll = gem_sh.roll;
+  //Int_t gem_sh_strip = gem_sh.strip;
+ 
+  bool cond1, cond2;
+
+  if(gem_sh_region == gem_region && gem_sh_layer == gem_layer && gem_sh_station == gem_station) cond1 = true;
+  else cond1 = false;
+  if(gem_sh_chamber == gem_chamber && gem_sh_roll == gem_roll) cond2 = true;
+  else cond2 = false;
+
+  return (cond1 & cond2);
+
+}
 
 // ------------ method called for each event  ------------
 void MuonDigiAnalyzer::beginJob()
@@ -555,6 +700,175 @@ void MuonDigiAnalyzer::analyzeGEM()
       // fill TTree
       gem_tree_->Fill();
     }
+  }
+}
+
+
+// ======= ME0 ========
+/*void MuonDigiAnalyzer::analyzeME0(const edm::Event& iEvent)
+{
+  //Loop over ME0 digi collection
+  for(ME0DigiCollection::DigiRangeIterator cItr = me0_digis->begin(); cItr != me0_digis->end(); ++cItr)
+  {
+    ME0DetId id = (*cItr).first; 
+
+    const GeomDet* gdet = me0_geo_->idToDet(id);
+    const BoundPlane & surface = gdet->surface();
+    const ME0EtaPartition * roll = me0_geo_->etaPartition(id);
+
+    me0_digi_.detId = id();
+    me0_digi_.region = (Short_t) id.region();
+    me0_digi_.ring = 0;
+    me0_digi_.station = 0;
+    me0_digi_.layer = (Short_t) id.layer();
+    me0_digi_.chamber = (Short_t) id.chamber();
+    me0_digi_.roll = (Short_t) id.roll();
+
+    ME0DigiCollection::const_iterator digiItr; 
+    //loop over digis of given roll
+    for (digiItr = (*cItr ).second.first; digiItr != (*cItr ).second.second; ++digiItr)
+    {
+      me0_digi_.strip = (Short_t) digiItr->strip();
+      me0_digi_.bx = (Short_t) digiItr->bx();
+
+      LocalPoint lp = roll->centreOfStrip(digiItr->strip());
+      me0_digi_.x = (Float_t) lp.x();
+      me0_digi_.y = (Float_t) lp.y();
+
+      GlobalPoint gp = surface.toGlobal(lp);
+      me0_digi_.g_r = (Float_t) gp.perp();
+      me0_digi_.g_eta = (Float_t) gp.eta();
+      me0_digi_.g_phi = (Float_t) gp.phi();
+      me0_digi_.g_x = (Float_t) gp.x();
+      me0_digi_.g_y = (Float_t) gp.y();
+      me0_digi_.g_z = (Float_t) gp.z();
+
+      // fill TTree
+      me0_tree_->Fill();
+    }
+  }
+}*/
+
+void MuonDigiAnalyzer::analyzeME0PreReco(const edm::Event& iEvent)
+{
+  std::vector<int> trackIds;
+  std::vector<int> trackType;
+  const edm::SimTrackContainer & sim_trks = *sim_tracks.product();
+
+  for (auto& t: sim_trks)
+  {
+    if (!isSimTrackGood(t)) continue;
+    trackType.push_back(t.type());
+    trackIds.push_back(t.trackId());
+  }
+
+  for (edm::PSimHitContainer::const_iterator itHit = ME0Hits->begin(); itHit != ME0Hits->end(); ++itHit)
+  {
+    if(abs(itHit->particleType()) != 13) continue;
+    if(std::find(trackIds.begin(), trackIds.end(), itHit->trackId()) == trackIds.end()) continue;
+
+    //std::cout<<"Size "<<trackIds.size()<<" id1 "<<trackIds[0]<<" type1 "<<trackType[0]<<" id2 "<<trackIds[1]<<" type2 "<<trackType[1]<<std::endl;
+    
+    me0_sh.eventNumber = iEvent.id().event();
+    me0_sh.detUnitId = itHit->detUnitId();
+    me0_sh.particleType = itHit->particleType();
+    me0_sh.x = itHit->localPosition().x();
+    me0_sh.y = itHit->localPosition().y();
+    me0_sh.energyLoss = itHit->energyLoss();
+    me0_sh.pabs = itHit->pabs();
+    me0_sh.timeOfFlight = itHit->timeOfFlight();
+    
+    const ME0DetId id(itHit->detUnitId());
+    
+    me0_sh.region = id.region();
+    me0_sh.ring = 0;
+    me0_sh.station = 0;
+    me0_sh.layer = id.layer();
+    me0_sh.chamber = id.chamber();
+    me0_sh.roll = id.roll();
+    
+    const LocalPoint p0(0., 0., 0.);
+    const GlobalPoint Gp0(me0_geometry_->idToDet(itHit->detUnitId())->surface().toGlobal(p0));
+    
+    me0_sh.Phi_0 = Gp0.phi();
+    me0_sh.R_0 = Gp0.perp();
+    me0_sh.DeltaPhi = atan(-1*id.region()*pow(-1,id.chamber())*itHit->localPosition().x()/(Gp0.perp() + itHit->localPosition().y()));
+    
+    const LocalPoint hitLP(itHit->localPosition());
+    const GlobalPoint hitGP(me0_geometry_->idToDet(itHit->detUnitId())->surface().toGlobal(hitLP));
+    me0_sh.globalR = hitGP.perp();
+    me0_sh.globalEta = hitGP.eta();
+    me0_sh.globalPhi = hitGP.phi();
+    me0_sh.globalX = hitGP.x();
+    me0_sh.globalY = hitGP.y();
+    me0_sh.globalZ = hitGP.z();
+    
+    //  Now filling strip info using entry point rather than local position to be
+    //  consistent with digi strips. To change back, just switch the comments - WHF
+    //  me0_sh.strip=gem_geometry_->etaPartition(itHit->detUnitId())->strip(hitLP);
+    const LocalPoint hitEP(itHit->entryPoint());
+    me0_sh.strip = me0_geometry_->etaPartition(itHit->detUnitId())->strip(hitEP);
+    
+    int count = 0;
+    //std::cout<<"SimHit: region "<<me0_sh.region<<" station "<<me0_sh.station<<" layer "<<me0_sh.layer<<" chamber "<<me0_sh.chamber<<" roll "<<me0_sh.roll<<" strip "<<me0_sh.strip<<" type "<<itHit->particleType()<<" id "<<itHit->trackId()<<std::endl;
+
+    //Loop over ME0 digi collection
+    for(ME0DigiPreRecoCollection::DigiRangeIterator cItr = me0_digis->begin(); cItr != me0_digis->end(); ++cItr)
+    {
+	ME0DetId id = (*cItr).first; 
+
+	const GeomDet* gdet = me0_geo_->idToDet(id);
+	const BoundPlane & surface = gdet->surface();
+
+	me0_digi_.detId = id();
+	me0_digi_.region = (Short_t) id.region();
+	me0_digi_.ring = 0;
+	me0_digi_.station = 0;
+	me0_digi_.layer = (Short_t) id.layer();
+	me0_digi_.chamber = (Short_t) id.chamber();
+	me0_digi_.roll = (Short_t) id.roll();
+
+	ME0DigiPreRecoCollection::const_iterator digiItr; 
+	//loop over digis of given roll
+	for (digiItr = (*cItr ).second.first; digiItr != (*cItr ).second.second; ++digiItr)
+	{
+		me0_digi_.strip = 0;
+		me0_digi_.bx = 0;
+
+		me0_digi_.x = (Float_t) digiItr->x();
+		me0_digi_.y = (Float_t) digiItr->y();
+
+		LocalPoint lp(digiItr->x(), digiItr->y(), 0);
+
+		GlobalPoint gp = surface.toGlobal(lp);
+		me0_digi_.g_r = (Float_t) gp.perp();
+		me0_digi_.g_eta = (Float_t) gp.eta();
+		me0_digi_.g_phi = (Float_t) gp.phi();
+		me0_digi_.g_x = (Float_t) gp.x();
+		me0_digi_.g_y = (Float_t) gp.y();
+		me0_digi_.g_z = (Float_t) gp.z();
+
+      		me0_digi_.x_sim = me0_sh.x;
+      		me0_digi_.y_sim = me0_sh.y;
+      		me0_digi_.g_eta_sim = me0_sh.globalEta;
+      		me0_digi_.g_phi_sim = me0_sh.globalPhi;
+      		me0_digi_.g_x_sim = me0_sh.globalX;
+      		me0_digi_.g_y_sim = me0_sh.globalY;
+      		me0_digi_.g_z_sim = me0_sh.globalZ;
+
+		// fill TTree
+		if(me0_digi_.bx != 0) continue;
+		if(isGEMDigiMatched(me0_digi_, me0_sh)){
+
+	      		me0_tree_->Fill();
+			count++;
+
+	      	}
+	}
+
+    }
+    me0_sh.countMatching = count;
+    me0_sh_tree_->Fill();
   }
 }
 
