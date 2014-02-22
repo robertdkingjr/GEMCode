@@ -58,6 +58,18 @@ SimTrackMatching = cms.PSet(
         simMuOnly = cms.bool(True),
         discardEleHits = cms.bool(True),
     ),
+    me0RecHit = cms.PSet(
+        verbose = cms.int32(0),
+        input = cms.InputTag('me0RecHits'),
+        simMuOnly = cms.bool(True),
+        discardEleHits = cms.bool(True),
+    ),
+    me0Seg = cms.PSet(
+        verbose = cms.int32(0),
+        input = cms.InputTag('me0Segments'),
+        simMuOnly = cms.bool(True),
+        discardEleHits = cms.bool(True),
+    ),
     rpcSimHit = cms.PSet(
         verbose = cms.int32(0),
         input = cms.InputTag('g4SimHits','MuonRPCHits'),

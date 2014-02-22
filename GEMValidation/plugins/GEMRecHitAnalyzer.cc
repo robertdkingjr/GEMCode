@@ -23,6 +23,7 @@
 #include "DataFormats/GEMRecHit/interface/GEMRecHitCollection.h"
 #include <DataFormats/GEMRecHit/interface/ME0RecHit.h>
 #include "DataFormats/GEMRecHit/interface/ME0RecHitCollection.h"
+#include <DataFormats/GEMRecHit/interface/ME0SegmentCollection.h>
 #include "DataFormats/Provenance/interface/Timestamp.h"
 #include <DataFormats/MuonDetId/interface/GEMDetId.h>
 
@@ -51,7 +52,8 @@ using namespace matching;
 struct MyGEMRecHit
 {  
   Int_t detId, particleType;
-  Float_t x, y, xErr;
+  Float_t x, y, xErr, yErr;
+  Float_t xExt, yExt;
   Int_t region, ring, station, layer, chamber, roll;
   Float_t globalR, globalEta, globalPhi, globalX, globalY, globalZ;
   Int_t bx, clusterSize, firstClusterStrip;
@@ -86,6 +88,15 @@ struct MyGEMSimHit
   Int_t strip;
   Float_t Phi_0, DeltaPhi, R_0;
   Int_t countMatching;
+};
+
+struct MyME0Segment
+{  
+  Int_t detId;
+  Float_t localX, localY, localZ;
+  Float_t dirTheta, dirPhi;
+  Int_t numberRH, ndof;
+  Float_t chi2;
 };
 
 struct MySimTrack
@@ -131,11 +142,13 @@ private:
   void bookGEMSimHitsTree();
   void bookME0SimHitsTree();
   void bookME0RecHitsTree();
+  void bookME0SegTree();
   void bookSimTracksTree();
   bool isSimTrackGood(const SimTrack &);
   bool isGEMRecHitMatched(MyGEMRecHit gem_recHit_, MyGEMSimHit gem_sh);
   void analyzeGEM(const edm::Event& iEvent);
   void analyzeME0(const edm::Event& iEvent);
+  void analyzeME0Seg();
   void analyzeTracks(edm::ParameterSet, const edm::Event&, const edm::EventSetup&);
   void buildLUT();
   std::pair<int,int> getClosestChambers(int region, float phi);
@@ -146,10 +159,12 @@ private:
   TTree* gem_sh_tree_;
   TTree* me0_sh_tree_;
   TTree* me0_rh_tree_;
+  TTree* me0_seg_tree_;
   TTree* track_tree_;
 
   edm::Handle<GEMRecHitCollection> gemRecHits_;
   edm::Handle<ME0RecHitCollection> me0RecHits_; 
+  edm::Handle<ME0SegmentCollection> me0Segment;
   edm::Handle<edm::PSimHitContainer> GEMHits;
   edm::Handle<edm::PSimHitContainer> ME0Hits;
   edm::Handle<edm::SimTrackContainer> sim_tracks;
@@ -166,6 +181,9 @@ private:
   MyGEMSimHit gem_sh;
   MyGEMSimHit me0_sh;
   MyGEMRecHit me0_rh;
+  MyME0Segment me0_seg;
+  MyGEMRecHit me0_rhFromSeg;
+  MyGEMRecHit me0_epFromSeg;
   MySimTrack track_;
 
   edm::ParameterSet cfg_;
@@ -175,6 +193,7 @@ private:
   edm::InputTag gemRecHitInput_;
   edm::InputTag me0SimHitInput_;
   edm::InputTag me0RecHitInput_;
+  edm::InputTag me0SegInput_;
 
   double simTrackMinPt_;
   double simTrackMaxPt_;
@@ -219,12 +238,16 @@ GEMRecHitAnalyzer::GEMRecHitAnalyzer(const edm::ParameterSet& iConfig)
   auto me0RecHit = cfg_.getParameter<edm::ParameterSet>("me0RecHit");
   me0RecHitInput_ = me0RecHit.getParameter<edm::InputTag>("input");
 
+  auto me0Seg = cfg_.getParameter<edm::ParameterSet>("me0Seg");
+  me0SegInput_ = me0Seg.getParameter<edm::InputTag>("input");
+
   bookGEMEventsTree();
   bookGEMRecHitTree();
   bookGEMRecHitNoiseTree();
   bookGEMSimHitsTree();
   bookME0SimHitsTree();
   bookME0RecHitsTree();
+  bookME0SegTree();
   bookSimTracksTree();
 }
 
@@ -290,8 +313,10 @@ void GEMRecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   iEvent.getByLabel(simTrackInput_, sim_vertices);
   iEvent.getByLabel(me0SimHitInput_, ME0Hits);
   iEvent.getByLabel(me0RecHitInput_, me0RecHits_);
+  iEvent.getByLabel(me0SegInput_, me0Segment);
   //if(hasGEMGeometry_ and GEMHits->size()) analyzeGEM(iEvent);
   if(hasME0Geometry_ and ME0Hits->size()) analyzeME0(iEvent);
+  if(hasME0Geometry_ and ME0Hits->size()) analyzeME0Seg();
   //if(hasGEMGeometry_ and GEMHits->size()) analyzeTracks(cfg_,iEvent,iSetup); 
 }
 
@@ -487,6 +512,21 @@ void GEMRecHitAnalyzer::bookME0RecHitsTree()
   me0_rh_tree_->Branch("globalY_sim", &me0_rh.globalY_sim);
   me0_rh_tree_->Branch("globalZ_sim", &me0_rh.globalZ_sim);
   me0_rh_tree_->Branch("pull", &me0_rh.pull);
+}
+
+void GEMRecHitAnalyzer::bookME0SegTree()
+{
+  edm::Service<TFileService> fs;
+  me0_seg_tree_ = fs->make<TTree>("ME0SegTree", "ME0SegTree");
+  me0_seg_tree_->Branch("detId", &me0_seg.detId);
+  me0_seg_tree_->Branch("localX", &me0_seg.localX);
+  me0_seg_tree_->Branch("localY", &me0_seg.localY);
+  me0_seg_tree_->Branch("localZ", &me0_seg.localZ);
+  me0_seg_tree_->Branch("dirTheta", &me0_seg.dirTheta);
+  me0_seg_tree_->Branch("dirPhi", &me0_seg.dirPhi);
+  me0_seg_tree_->Branch("numberRH", &me0_seg.numberRH);
+  me0_seg_tree_->Branch("chi2", &me0_seg.chi2);
+  me0_seg_tree_->Branch("ndof", &me0_seg.ndof);
 }
 
 bool GEMRecHitAnalyzer::isGEMRecHitMatched(MyGEMRecHit gem_recHit_, MyGEMSimHit gem_sh)
@@ -817,6 +857,84 @@ void GEMRecHitAnalyzer::analyzeME0(const edm::Event& iEvent)
     }
     me0_sh.countMatching = count;
     me0_sh_tree_->Fill();
+  }
+
+}
+
+// ======= ME0 Segments =======
+void GEMRecHitAnalyzer::analyzeME0Seg()
+{
+
+  for (auto me0s = me0Segment->begin(); me0s != me0Segment->end(); me0s++) {
+
+    // The ME0 Ensamble DetId refers to layer = 1
+    ME0DetId id = me0s->me0DetId();
+    std::cout <<" Original ME0DetID "<<id<<std::endl;
+    auto roll = me0_geometry_->etaPartition(id);
+    std::cout <<"Global Segment Position "<< roll->toGlobal(me0s->localPosition())<<std::endl;
+    auto segLP = me0s->localPosition();
+    auto segLD = me0s->localDirection();
+    std::cout <<" Global Direction theta = "<<segLD.theta()<<" phi="<<segLD.phi()<<std::endl;
+    auto me0rhs = me0s->specificRecHits();
+    std::cout <<"ME0 Ensamble Det Id "<<id<<" Numbero of RecHits "<<me0rhs.size()<<std::endl;
+
+    me0_seg.detId = id;
+    me0_seg.localX = segLP.x();
+    me0_seg.localY = segLP.y();
+    me0_seg.localZ = segLP.z();
+    me0_seg.dirTheta = segLD.theta();
+    me0_seg.dirPhi = segLD.phi();
+    me0_seg.numberRH = me0rhs.size();
+    me0_seg.chi2 = me0s->chi2();
+    me0_seg.ndof = me0s->degreesOfFreedom();
+
+    for (auto rh = me0rhs.begin(); rh!= me0rhs.end(); rh++){
+
+      auto me0id = rh->me0Id();
+      auto rhr = me0_geometry_->etaPartition(me0id);
+      auto rhLP = rh->localPosition();
+      auto erhLEP = rh->localPositionError();
+      auto rhGP = rhr->toGlobal(rhLP);
+      auto rhLPSegm = roll->toLocal(rhGP);
+      float xe = segLP.x()+segLD.x()*rhLPSegm.z()/segLD.z();
+      float ye = segLP.y()+segLD.y()*rhLPSegm.z()/segLD.z();
+      float ze = rhLPSegm.z();
+      LocalPoint extrPoint(xe,ye,ze); // in segment rest frame
+      auto extSegm = rhr->toLocal(roll->toGlobal(extrPoint)); // in layer restframe
+
+      me0_rhFromSeg.detId = me0id; 
+
+      me0_rhFromSeg.region = me0id.region(); 
+      me0_rhFromSeg.station = 0; 
+      me0_rhFromSeg.ring = 0; 
+      me0_rhFromSeg.layer = me0id.layer(); 
+      me0_rhFromSeg.chamber = me0id.chamber(); 
+      me0_rhFromSeg.roll = me0id.roll(); 
+
+      me0_rhFromSeg.x = rhLP.x();
+      me0_rhFromSeg.xErr = erhLEP.xx();
+      me0_rhFromSeg.y = rhLP.y();
+      me0_rhFromSeg.yErr = erhLEP.yy();
+
+      me0_rhFromSeg.globalX = rhGP.x();
+      me0_rhFromSeg.globalY = rhGP.y();
+      me0_rhFromSeg.globalZ = rhGP.z();
+      me0_rhFromSeg.globalEta = rhGP.eta();
+      me0_rhFromSeg.globalPhi = rhGP.phi();
+
+      me0_rhFromSeg.xExt = extSegm.x();
+      me0_rhFromSeg.yExt = extSegm.y();
+
+      std::cout <<" ME0 Layer Id "<<rh->me0Id()<<" error on the local point "<< erhLEP
+	<<"\n-> Ensamble Rest Frame RH local position "<<rhLPSegm<<" Segment extrapolation "<<extrPoint
+	<<"\n-> Layer Rest Frame RH local position "<<rhLP<<" Segment extrapolation "<<extSegm<<std::endl;
+
+
+
+    }
+
+    me0_seg_tree_->Fill();
+
   }
 
 }
