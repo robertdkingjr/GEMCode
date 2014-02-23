@@ -70,7 +70,7 @@ struct MyGEMRecHitEvent
 struct MyGEMRecHitNoise
 { 
   Int_t detId;
-  Float_t x, y, xErr;
+  Float_t x, y, xErr, yErr;
   Int_t region, ring, station, layer, chamber, roll;
   Float_t globalR, globalEta, globalPhi, globalX, globalY, globalZ;
   Int_t bx, clusterSize, firstClusterStrip;
@@ -143,6 +143,7 @@ private:
   void bookME0SimHitsTree();
   void bookME0RecHitsTree();
   void bookME0SegTree();
+  void bookME0RHFromSegTree();
   void bookSimTracksTree();
   bool isSimTrackGood(const SimTrack &);
   bool isGEMRecHitMatched(MyGEMRecHit gem_recHit_, MyGEMSimHit gem_sh);
@@ -160,11 +161,12 @@ private:
   TTree* me0_sh_tree_;
   TTree* me0_rh_tree_;
   TTree* me0_seg_tree_;
+  TTree* me0_rhSeg_tree_;
   TTree* track_tree_;
 
   edm::Handle<GEMRecHitCollection> gemRecHits_;
   edm::Handle<ME0RecHitCollection> me0RecHits_; 
-  edm::Handle<ME0SegmentCollection> me0Segment;
+  edm::Handle<ME0SegmentCollection> me0Segment_;
   edm::Handle<edm::PSimHitContainer> GEMHits;
   edm::Handle<edm::PSimHitContainer> ME0Hits;
   edm::Handle<edm::SimTrackContainer> sim_tracks;
@@ -183,7 +185,6 @@ private:
   MyGEMRecHit me0_rh;
   MyME0Segment me0_seg;
   MyGEMRecHit me0_rhFromSeg;
-  MyGEMRecHit me0_epFromSeg;
   MySimTrack track_;
 
   edm::ParameterSet cfg_;
@@ -248,6 +249,7 @@ GEMRecHitAnalyzer::GEMRecHitAnalyzer(const edm::ParameterSet& iConfig)
   bookME0SimHitsTree();
   bookME0RecHitsTree();
   bookME0SegTree();
+  bookME0RHFromSegTree();
   bookSimTracksTree();
 }
 
@@ -313,11 +315,11 @@ void GEMRecHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   iEvent.getByLabel(simTrackInput_, sim_vertices);
   iEvent.getByLabel(me0SimHitInput_, ME0Hits);
   iEvent.getByLabel(me0RecHitInput_, me0RecHits_);
-  iEvent.getByLabel(me0SegInput_, me0Segment);
-  //if(hasGEMGeometry_ and GEMHits->size()) analyzeGEM(iEvent);
-  if(hasME0Geometry_ and ME0Hits->size()) analyzeME0(iEvent);
-  if(hasME0Geometry_ and ME0Hits->size()) analyzeME0Seg();
-  //if(hasGEMGeometry_ and GEMHits->size()) analyzeTracks(cfg_,iEvent,iSetup); 
+  iEvent.getByLabel(me0SegInput_, me0Segment_);
+  //if(hasGEMGeometry_ and gemRecHits_->size()) analyzeGEM(iEvent);
+  if(hasME0Geometry_ and me0RecHits_->size()) analyzeME0(iEvent);
+  if(hasME0Geometry_ and me0Segment_->size()) analyzeME0Seg();
+  //if(hasGEMGeometry_ and gemRecHits_->size()) analyzeTracks(cfg_,iEvent,iSetup); 
 }
 
 void GEMRecHitAnalyzer::bookGEMEventsTree()
@@ -529,6 +531,42 @@ void GEMRecHitAnalyzer::bookME0SegTree()
   me0_seg_tree_->Branch("ndof", &me0_seg.ndof);
 }
 
+void GEMRecHitAnalyzer::bookME0RHFromSegTree()
+{
+  edm::Service<TFileService> fs;
+  me0_rhSeg_tree_ = fs->make<TTree>("ME0RHFromSegTree", "ME0RHFromSegTree");
+  me0_rhSeg_tree_->Branch("detId", &me0_rhFromSeg.detId);
+  me0_rhSeg_tree_->Branch("region", &me0_rhFromSeg.region);
+  me0_rhSeg_tree_->Branch("ring", &me0_rhFromSeg.ring);
+  me0_rhSeg_tree_->Branch("station", &me0_rhFromSeg.station);
+  me0_rhSeg_tree_->Branch("layer", &me0_rhFromSeg.layer);
+  me0_rhSeg_tree_->Branch("chamber", &me0_rhFromSeg.chamber);
+  me0_rhSeg_tree_->Branch("roll", &me0_rhFromSeg.roll);
+  //me0_rhSeg_tree_->Branch("bx", &me0_rhFromSeg.bx);
+  //me0_rhSeg_tree_->Branch("clusterSize", &me0_rhFromSeg.clusterSize);
+  //me0_rhSeg_tree_->Branch("firstClusterStrip", &me0_rhFromSeg.firstClusterStrip);
+  me0_rhSeg_tree_->Branch("x", &me0_rhFromSeg.x);
+  me0_rhSeg_tree_->Branch("xErr", &me0_rhFromSeg.xErr);
+  me0_rhSeg_tree_->Branch("y", &me0_rhFromSeg.y);
+  me0_rhSeg_tree_->Branch("yErr", &me0_rhFromSeg.yErr);
+  me0_rhSeg_tree_->Branch("globalR", &me0_rhFromSeg.globalR);
+  me0_rhSeg_tree_->Branch("globalEta", &me0_rhFromSeg.globalEta);
+  me0_rhSeg_tree_->Branch("globalPhi", &me0_rhFromSeg.globalPhi);
+  me0_rhSeg_tree_->Branch("globalX", &me0_rhFromSeg.globalX);
+  me0_rhSeg_tree_->Branch("globalY", &me0_rhFromSeg.globalY);
+  me0_rhSeg_tree_->Branch("globalZ", &me0_rhFromSeg.globalZ);
+  //me0_rhSeg_tree_->Branch("x_sim", &me0_rhFromSeg.x_sim);
+  //me0_rhSeg_tree_->Branch("y_sim", &me0_rhFromSeg.y_sim);
+  //me0_rhSeg_tree_->Branch("globalEta_sim", &me0_rhFromSeg.globalEta_sim);
+  //me0_rhSeg_tree_->Branch("globalPhi_sim", &me0_rhFromSeg.globalPhi_sim);
+  //me0_rhSeg_tree_->Branch("globalX_sim", &me0_rhFromSeg.globalX_sim);
+  //me0_rhSeg_tree_->Branch("globalY_sim", &me0_rhFromSeg.globalY_sim);
+  //me0_rhSeg_tree_->Branch("globalZ_sim", &me0_rhFromSeg.globalZ_sim);
+  //me0_rhSeg_tree_->Branch("pull", &me0_rhFromSeg.pull);
+  me0_rhSeg_tree_->Branch("xExt", &me0_rhFromSeg.xExt);
+  me0_rhSeg_tree_->Branch("yExt", &me0_rhFromSeg.yExt);
+}
+
 bool GEMRecHitAnalyzer::isGEMRecHitMatched(MyGEMRecHit gem_recHit_, MyGEMSimHit gem_sh)
 {
 
@@ -653,15 +691,15 @@ void GEMRecHitAnalyzer::analyzeGEM(const edm::Event& iEvent)
       gem_recHit_.chamber = (Short_t) id.chamber();
       gem_recHit_.roll = (Short_t) id.roll();
       
-      LocalPoint hitLP = recHit->localPosition();
-      GlobalPoint hitGP = gem_geometry_->idToDet((*recHit).gemId())->surface().toGlobal(hitLP);
+      LocalPoint rhLP = recHit->localPosition();
+      GlobalPoint rhGP = gem_geometry_->idToDet((*recHit).gemId())->surface().toGlobal(rhLP);
       
-      gem_recHit_.globalR = hitGP.perp();
-      gem_recHit_.globalEta = hitGP.eta();
-      gem_recHit_.globalPhi = hitGP.phi();
-      gem_recHit_.globalX = hitGP.x();
-      gem_recHit_.globalY = hitGP.y();
-      gem_recHit_.globalZ = hitGP.z();
+      gem_recHit_.globalR = rhGP.perp();
+      gem_recHit_.globalEta = rhGP.eta();
+      gem_recHit_.globalPhi = rhGP.phi();
+      gem_recHit_.globalX = rhGP.x();
+      gem_recHit_.globalY = rhGP.y();
+      gem_recHit_.globalZ = rhGP.z();
       
       gem_recHit_.x_sim = gem_sh.x;
       gem_recHit_.y_sim = gem_sh.y;
@@ -711,15 +749,15 @@ void GEMRecHitAnalyzer::analyzeGEM(const edm::Event& iEvent)
     gem_noise_recHit_.chamber = (Short_t) id.chamber();
     gem_noise_recHit_.roll = (Short_t) id.roll();
     
-    LocalPoint hitLP = recHit->localPosition();
-    GlobalPoint hitGP = gem_geometry_->idToDet((*recHit).gemId())->surface().toGlobal(hitLP);
+    LocalPoint rhLP = recHit->localPosition();
+    GlobalPoint rhGP = gem_geometry_->idToDet((*recHit).gemId())->surface().toGlobal(rhLP);
    
-    gem_noise_recHit_.globalR = hitGP.perp();
-    gem_noise_recHit_.globalEta = hitGP.eta();
-    gem_noise_recHit_.globalPhi = hitGP.phi();
-    gem_noise_recHit_.globalX = hitGP.x();
-    gem_noise_recHit_.globalY = hitGP.y();
-    gem_noise_recHit_.globalZ = hitGP.z();
+    gem_noise_recHit_.globalR = rhGP.perp();
+    gem_noise_recHit_.globalEta = rhGP.eta();
+    gem_noise_recHit_.globalPhi = rhGP.phi();
+    gem_noise_recHit_.globalX = rhGP.x();
+    gem_noise_recHit_.globalY = rhGP.y();
+    gem_noise_recHit_.globalZ = rhGP.z();
     
     const GEMEtaPartition* roll(gem_geom_->etaPartition(id));
     const TrapezoidalStripTopology* top(dynamic_cast<const TrapezoidalStripTopology*> (&(roll->topology())));
@@ -818,15 +856,15 @@ void GEMRecHitAnalyzer::analyzeME0(const edm::Event& iEvent)
       me0_rh.chamber = (Short_t) id.chamber();
       me0_rh.roll = (Short_t) id.roll();
       
-      LocalPoint hitLP = recHit->localPosition();
-      GlobalPoint hitGP = me0_geometry_->idToDet((*recHit).me0Id())->surface().toGlobal(hitLP);
+      LocalPoint rhLP = recHit->localPosition();
+      GlobalPoint rhGP = me0_geometry_->idToDet((*recHit).me0Id())->surface().toGlobal(rhLP);
       
-      me0_rh.globalR = hitGP.perp();
-      me0_rh.globalEta = hitGP.eta();
-      me0_rh.globalPhi = hitGP.phi();
-      me0_rh.globalX = hitGP.x();
-      me0_rh.globalY = hitGP.y();
-      me0_rh.globalZ = hitGP.z();
+      me0_rh.globalR = rhGP.perp();
+      me0_rh.globalEta = rhGP.eta();
+      me0_rh.globalPhi = rhGP.phi();
+      me0_rh.globalX = rhGP.x();
+      me0_rh.globalY = rhGP.y();
+      me0_rh.globalZ = rhGP.z();
       
       me0_rh.x_sim = me0_sh.x;
       me0_rh.y_sim = me0_sh.y;
@@ -865,7 +903,7 @@ void GEMRecHitAnalyzer::analyzeME0(const edm::Event& iEvent)
 void GEMRecHitAnalyzer::analyzeME0Seg()
 {
 
-  for (auto me0s = me0Segment->begin(); me0s != me0Segment->end(); me0s++) {
+  for (auto me0s = me0Segment_->begin(); me0s != me0Segment_->end(); me0s++) {
 
     // The ME0 Ensamble DetId refers to layer = 1
     ME0DetId id = me0s->me0DetId();
@@ -876,7 +914,7 @@ void GEMRecHitAnalyzer::analyzeME0Seg()
     auto segLD = me0s->localDirection();
     std::cout <<" Global Direction theta = "<<segLD.theta()<<" phi="<<segLD.phi()<<std::endl;
     auto me0rhs = me0s->specificRecHits();
-    std::cout <<"ME0 Ensamble Det Id "<<id<<" Numbero of RecHits "<<me0rhs.size()<<std::endl;
+    std::cout <<"ME0 Ensamble Det Id "<<id<<" Number of RecHits "<<me0rhs.size()<<std::endl;
 
     me0_seg.detId = id;
     me0_seg.localX = segLP.x();
@@ -916,6 +954,7 @@ void GEMRecHitAnalyzer::analyzeME0Seg()
       me0_rhFromSeg.y = rhLP.y();
       me0_rhFromSeg.yErr = erhLEP.yy();
 
+      me0_rhFromSeg.globalR = rhGP.perp();
       me0_rhFromSeg.globalX = rhGP.x();
       me0_rhFromSeg.globalY = rhGP.y();
       me0_rhFromSeg.globalZ = rhGP.z();
@@ -929,7 +968,7 @@ void GEMRecHitAnalyzer::analyzeME0Seg()
 	<<"\n-> Ensamble Rest Frame RH local position "<<rhLPSegm<<" Segment extrapolation "<<extrPoint
 	<<"\n-> Layer Rest Frame RH local position "<<rhLP<<" Segment extrapolation "<<extSegm<<std::endl;
 
-
+      me0_rhSeg_tree_->Fill();
 
     }
 
