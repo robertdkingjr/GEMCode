@@ -879,7 +879,7 @@ void GEMRecHitAnalyzer::analyzeME0(const edm::Event& iEvent)
       if(isGEMRecHitMatched(me0_rh, me0_sh))
       {
 	bool verbose(false);
-	if (verbose)
+	if (verbose){
     	  std::cout<<"SimHit: region "<<me0_sh.region<<" station "<<me0_sh.station
 		   <<" layer "<<me0_sh.layer<<" chamber "<<me0_sh.chamber<<" roll "
 		   <<me0_sh.roll<<" strip "<<me0_sh.strip<<" type "<<itHit->particleType()
@@ -889,6 +889,7 @@ void GEMRecHitAnalyzer::analyzeME0(const edm::Event& iEvent)
 		   <<" roll "<<me0_rh.roll<<" firstStrip "<<me0_rh.firstClusterStrip
 		   <<" cls "<<me0_rh.clusterSize<<" bx "<<me0_rh.bx<<" x: "<<me0_rh.x
 		   <<" sigma: "<<me0_rh.xErr<<std::endl;
+	}
 	me0_rh_tree_->Fill();
 	count++;
       }
@@ -907,14 +908,14 @@ void GEMRecHitAnalyzer::analyzeME0Seg()
 
     // The ME0 Ensamble DetId refers to layer = 1
     ME0DetId id = me0s->me0DetId();
-    std::cout <<" Original ME0DetID "<<id<<std::endl;
+    //std::cout <<" Original ME0DetID "<<id<<std::endl;
     auto roll = me0_geometry_->etaPartition(id);
-    std::cout <<"Global Segment Position "<< roll->toGlobal(me0s->localPosition())<<std::endl;
+    //std::cout <<"Global Segment Position "<< roll->toGlobal(me0s->localPosition())<<std::endl;
     auto segLP = me0s->localPosition();
     auto segLD = me0s->localDirection();
-    std::cout <<" Global Direction theta = "<<segLD.theta()<<" phi="<<segLD.phi()<<std::endl;
+    //std::cout <<" Global Direction theta = "<<segLD.theta()<<" phi="<<segLD.phi()<<std::endl;
     auto me0rhs = me0s->specificRecHits();
-    std::cout <<"ME0 Ensamble Det Id "<<id<<" Number of RecHits "<<me0rhs.size()<<std::endl;
+    //std::cout <<"ME0 Ensamble Det Id "<<id<<" Number of RecHits "<<me0rhs.size()<<std::endl;
 
     me0_seg.detId = id;
     me0_seg.localX = segLP.x();
@@ -964,7 +965,9 @@ void GEMRecHitAnalyzer::analyzeME0Seg()
       me0_rhFromSeg.xExt = extSegm.x();
       me0_rhFromSeg.yExt = extSegm.y();
 
-      std::cout <<" ME0 Layer Id "<<rh->me0Id()<<" error on the local point "<< erhLEP
+      bool verbose(false);
+      if (verbose)
+      	std::cout <<" ME0 Layer Id "<<rh->me0Id()<<" error on the local point "<< erhLEP
 	<<"\n-> Ensamble Rest Frame RH local position "<<rhLPSegm<<" Segment extrapolation "<<extrPoint
 	<<"\n-> Layer Rest Frame RH local position "<<rhLP<<" Segment extrapolation "<<extSegm<<std::endl;
 
