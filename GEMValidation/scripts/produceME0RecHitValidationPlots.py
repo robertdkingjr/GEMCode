@@ -268,19 +268,19 @@ if __name__ == "__main__":
   draw_1D(targetDir, "specRecHitDX_rp1_l5", ext, treeRHFromSeg, "x^{local}_{rec} - x^{local}_{ext} region1, layer5; x^{local}_{rec} - x^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(x - xExt)", AND(rp1,l5), "");
   draw_1D(targetDir, "specRecHitDX_rp1_l6", ext, treeRHFromSeg, "x^{local}_{rec} - x^{local}_{ext} region1, layer6; x^{local}_{rec} - x^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(x - xExt)", AND(rp1,l6), "");
 
-  draw_1D(targetDir, "specRecHitDY_rm1_l1", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer1; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rm1,l1), "");
-  draw_1D(targetDir, "specRecHitDY_rm1_l2", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer2; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rm1,l2), "");
-  draw_1D(targetDir, "specRecHitDY_rm1_l3", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer3; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rm1,l3), "");
-  draw_1D(targetDir, "specRecHitDY_rm1_l4", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer4; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rm1,l4), "");
-  draw_1D(targetDir, "specRecHitDY_rm1_l5", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer5; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rm1,l5), "");
-  draw_1D(targetDir, "specRecHitDY_rm1_l6", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer6; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rm1,l6), "");
+  draw_1D(targetDir, "specRecHitDY_rm1_l1", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer1; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rm1,l1), "");
+  draw_1D(targetDir, "specRecHitDY_rm1_l2", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer2; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rm1,l2), "");
+  draw_1D(targetDir, "specRecHitDY_rm1_l3", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer3; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rm1,l3), "");
+  draw_1D(targetDir, "specRecHitDY_rm1_l4", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer4; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rm1,l4), "");
+  draw_1D(targetDir, "specRecHitDY_rm1_l5", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer5; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rm1,l5), "");
+  draw_1D(targetDir, "specRecHitDY_rm1_l6", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region-1, layer6; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rm1,l6), "");
 
-  draw_1D(targetDir, "specRecHitDY_rp1_l1", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer1; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rp1,l1), "");
-  draw_1D(targetDir, "specRecHitDY_rp1_l2", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer2; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rp1,l2), "");
-  draw_1D(targetDir, "specRecHitDY_rp1_l3", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer3; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rp1,l3), "");
-  draw_1D(targetDir, "specRecHitDY_rp1_l4", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer4; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rp1,l4), "");
-  draw_1D(targetDir, "specRecHitDY_rp1_l5", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer5; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rp1,l5), "");
-  draw_1D(targetDir, "specRecHitDY_rp1_l6", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer6; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-1,+1)", "(y - yExt)", AND(rp1,l6), "");
+  draw_1D(targetDir, "specRecHitDY_rp1_l1", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer1; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rp1,l1), "");
+  draw_1D(targetDir, "specRecHitDY_rp1_l2", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer2; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rp1,l2), "");
+  draw_1D(targetDir, "specRecHitDY_rp1_l3", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer3; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rp1,l3), "");
+  draw_1D(targetDir, "specRecHitDY_rp1_l4", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer4; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rp1,l4), "");
+  draw_1D(targetDir, "specRecHitDY_rp1_l5", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer5; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rp1,l5), "");
+  draw_1D(targetDir, "specRecHitDY_rp1_l6", ext, treeRHFromSeg, "y^{local}_{rec} - y^{local}_{ext} region1, layer6; y^{local}_{rec} - y^{local}_{ext} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)", AND(rp1,l6), "");
 
 #-------------------------------------------------------------------------------------------------------------------------------------#
 
