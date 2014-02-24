@@ -214,6 +214,13 @@ if __name__ == "__main__":
 
 #-------------------------------------------------------------------------------------------------------------------------------------#
 
+  draw_1D(targetDir, "globalEtaSpecRH", ext, treeRHFromSeg, "Fitted RecHits Eta Distribution; #eta; entries", 
+	   "h_", "(200,-4.0,4.0)", "globalEta", TCut(""), "");
+  draw_1D(targetDir, "globalPhiSpecRH", ext, treeRHFromSeg, "Fitted RecHits Phi Distribution; #phi; entries", 
+	   "h_", "(18,-TMath::pi(),TMath::pi())", "globalPhi", TCut(""), "");
+
+#-------------------------------------------------------------------------------------------------------------------------------------#
+
   draw_occ(targetDir, "localrh_xy_specRH_rm1_l1", ext, treeRHFromSeg, " ME0 Specific RecHit occupancy: region-1, layer1;globalX [cm];globalY [cm]", 
 	   "h_", "(120,-280,280,120,-280,280)", "globalY:globalX", AND(rm1,l1), "COLZ");
   draw_occ(targetDir, "localrh_xy_specRH_rm1_l2", ext, treeRHFromSeg, " ME0 Specific RecHit occupancy: region-1, layer2;globalX [cm];globalY [cm]", 

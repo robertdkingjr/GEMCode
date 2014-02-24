@@ -6,7 +6,8 @@ process = cms.Process("GEMRECOANA")
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
-process.load('Configuration.Geometry.GeometryExtended2019Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2023HGCalReco_cff')
+process.load('Configuration.Geometry.GeometryExtended2023HGCal_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -43,7 +44,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.source = cms.Source("PoolSource",
-  fileNames = cms.untracked.vstring('file:out_rechit.root')
+  fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/c/calabria/private/ME0Marcello2/CMSSW_6_2_0_SLHC7/src/PRODUCTION_ME0/out_rechit_me0.test.root')
 )
 
 process.TFileService = cms.Service("TFileService",
