@@ -14,8 +14,7 @@ ROOT.gROOT.SetBatch(1)
 
 if __name__ == "__main__":  
 
-  inputFile = '/afs/cern.ch/work/c/calabria/private/ME0Marcello2/CMSSW_6_2_0_SLHC7/src/GEMCode/GEMValidation/test/gem_localrec_ana.root'
-  #outputFile = '/afs/cern.ch/work/c/calabria/private/ME0Marcello2/CMSSW_6_2_0_SLHC7/src/GEMCode/GEMValidation/test/gem_localrec_ana_tmp.root'
+  inputFile = 'gem_localrec_ana.root'
   targetDir = './'
   
   ## extension for figures - add more?
@@ -313,5 +312,3 @@ if __name__ == "__main__":
   draw_1D(targetDir, "specRecHitPullLocalY_rp1_l6", ext, treeRHFromSeg, "(y^{local}_{rec} - y^{local}_{ext})/#sigma_{y} region1, layer6; (y^{local}_{rec} - y^{local}_{ext})/#sigma_{y} [cm]; entries", "h_", "(100,-5,+5)", "(y - yExt)/sqrt(yErr)", AND(rp1,l6), "");
 
   file.Close()
-  #fileOut.Close()
-  
