@@ -44,7 +44,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.source = cms.Source("PoolSource",
-  fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/c/calabria/private/ME0Marcello2/CMSSW_6_2_0_SLHC7/src/PRODUCTION_ME0/out_rechit_me0.test.root')
+  fileNames = cms.untracked.vstring('file:out_rechit_me0.root')
 )
 
 process.TFileService = cms.Service("TFileService",
