@@ -907,14 +907,14 @@ void GEMRecHitAnalyzer::analyzeME0Seg()
 
     // The ME0 Ensamble DetId refers to layer = 1
     ME0DetId id = me0s->me0DetId();
-    std::cout <<" Original ME0DetID "<<id<<std::endl;
+    //std::cout <<" Original ME0DetID "<<id<<std::endl;
     auto roll = me0_geometry_->etaPartition(id);
-    std::cout <<"Global Segment Position "<< roll->toGlobal(me0s->localPosition())<<std::endl;
+    //std::cout <<"Global Segment Position "<< roll->toGlobal(me0s->localPosition())<<std::endl;
     auto segLP = me0s->localPosition();
     auto segLD = me0s->localDirection();
-    std::cout <<" Global Direction theta = "<<segLD.theta()<<" phi="<<segLD.phi()<<std::endl;
+    //std::cout <<" Global Direction theta = "<<segLD.theta()<<" phi="<<segLD.phi()<<std::endl;
     auto me0rhs = me0s->specificRecHits();
-    std::cout <<"ME0 Ensamble Det Id "<<id<<" Number of RecHits "<<me0rhs.size()<<std::endl;
+    //std::cout <<"ME0 Ensamble Det Id "<<id<<" Number of RecHits "<<me0rhs.size()<<std::endl;
 
     me0_seg.detId = id;
     me0_seg.localX = segLP.x();
@@ -964,9 +964,9 @@ void GEMRecHitAnalyzer::analyzeME0Seg()
       me0_rhFromSeg.xExt = extSegm.x();
       me0_rhFromSeg.yExt = extSegm.y();
 
-      std::cout <<" ME0 Layer Id "<<rh->me0Id()<<" error on the local point "<< erhLEP
-	<<"\n-> Ensamble Rest Frame RH local position "<<rhLPSegm<<" Segment extrapolation "<<extrPoint
-	<<"\n-> Layer Rest Frame RH local position "<<rhLP<<" Segment extrapolation "<<extSegm<<std::endl;
+      //std::cout <<" ME0 Layer Id "<<rh->me0Id()<<" error on the local point "<< erhLEP
+	//<<"\n-> Ensamble Rest Frame RH local position "<<rhLPSegm<<" Segment extrapolation "<<extrPoint
+	//<<"\n-> Layer Rest Frame RH local position "<<rhLP<<" Segment extrapolation "<<extSegm<<std::endl;
 
       me0_rhSeg_tree_->Fill();
 
