@@ -59,7 +59,7 @@ GEMDigiMatcher::init()
   event().getByLabel(gemPadDigiInput_, gem_pads);
   if (runGEMPad_) matchPadsToSimTrack(*gem_pads.product());
 
-  edm::Handle<GEMCSCPadDigiCollection> gem_co_pads;
+  edm::Handle<GEMCSCCoPadDigiCollection> gem_co_pads;
   event().getByLabel(gemPadDigiInput_, gem_co_pads);
   if (runGEMCoPad_) matchCoPadsToSimTrack(*gem_co_pads.product());
 }
@@ -144,7 +144,7 @@ GEMDigiMatcher::matchPadsToSimTrack(const GEMCSCPadDigiCollection& pads)
 
 
 void
-GEMDigiMatcher::matchCoPadsToSimTrack(const GEMCSCPadDigiCollection& co_pads)
+GEMDigiMatcher::matchCoPadsToSimTrack(const GEMCSCCoPadDigiCollection& co_pads)
 {
   auto det_ids = simhit_matcher_->detIdsGEMCoincidences();
   for (auto id: det_ids)
@@ -165,11 +165,11 @@ GEMDigiMatcher::matchCoPadsToSimTrack(const GEMCSCPadDigiCollection& co_pads)
     for (auto pad = co_pads_in_det.first; pad != co_pads_in_det.second; ++pad)
     {
       // check that the pad BX is within the range
-      if (pad->bx() < minBXGEM_ || pad->bx() > maxBXGEM_) continue;
+      if (pad->first().bx() < minBXGEM_ || pad->first().bx() > maxBXGEM_) continue;
       // check that it matches a coincidence pad that was hit by SimHits from our track
-      if (hit_co_pads.find(pad->pad()) == hit_co_pads.end()) continue;
+      if (hit_co_pads.find(pad->first().pad()) == hit_co_pads.end()) continue;
 
-      auto mydigi = make_digi(id, pad->pad(), pad->bx(), GEM_COPAD);
+      auto mydigi = make_digi(id, pad->first().pad(), pad->first().bx(), GEM_COPAD);
       detid_to_copads_[id].push_back(mydigi);
       superchamber_to_copads_[ superch_id() ].push_back(mydigi);
     }

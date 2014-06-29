@@ -15,6 +15,7 @@
 #include "DataFormats/Common/interface/DetSetVector.h"
 #include "DataFormats/GEMDigi/interface/GEMDigiCollection.h"
 #include "DataFormats/GEMDigi/interface/GEMCSCPadDigiCollection.h"
+#include "DataFormats/GEMDigi/interface/GEMCSCCoPadDigiCollection.h"
 
 #include <vector>
 #include <map>
@@ -86,7 +87,7 @@ private:
 
   void matchDigisToSimTrack(const GEMDigiCollection& digis);
   void matchPadsToSimTrack(const GEMCSCPadDigiCollection& pads);
-  void matchCoPadsToSimTrack(const GEMCSCPadDigiCollection& co_pads);
+  void matchCoPadsToSimTrack(const GEMCSCCoPadDigiCollection& co_pads);
 
   edm::InputTag gemDigiInput_;
   edm::InputTag gemPadDigiInput_;

@@ -52,7 +52,7 @@ SimTrackMatching = cms.PSet(
      ),
     gemCoPadDigi = cms.PSet(
         verbose = cms.int32(0),
-        input = cms.InputTag("simMuonGEMCSCPadDigis", "Coincidence"),
+        input = cms.InputTag("simCscTriggerPrimitiveDigis"),
         run = cms.bool(True),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
