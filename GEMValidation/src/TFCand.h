@@ -21,9 +21,11 @@ class TFCand
 
   const L1MuRegionalCand * l1Cand() const {return l1Cand_;}
 
-  TFTrack* tftrack() const {return tftrack_;}
+  const TFTrack* tftrack() const {return tftrack_;}
+  void setTFTrack(const TFTrack* trk) {tftrack_ = trk;}
 
-  std::vector < CSCDetId > ids() const {return ids_;}
+  std::vector<CSCDetId> getTriggerDigisIds() const {return tftrack_->getTriggerDigisIds();}
+  std::vector<const CSCCorrelatedLCTDigi*> getTriggerDigis() const {return tftrack_->getTriggerDigis();} 
 
   double pt() const {return pt_;}
   double eta() const {return eta_;}
@@ -33,7 +35,7 @@ class TFCand
  private:
 
   const L1MuRegionalCand* l1Cand_;
-  TFTrack* tftrack_;
+  const TFTrack* tftrack_;
   std::vector<CSCDetId> ids_;
   double pt_;
   double eta_;

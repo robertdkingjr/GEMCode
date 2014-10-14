@@ -132,23 +132,27 @@ TrackMatcher::init()
   }
 
   dtrc_ = new CSCTFDTReceiver();
+
+  if (cscTfTrackInputLabel_.label()!=""){
+    // Tracks produced by TF
+    edm::Handle<L1CSCTrackCollection> hl1Tracks;
+    event().getByLabel(cscTfTrackInputLabel_,hl1Tracks);
+    matchTfTrackToSimTrack(*hl1Tracks.product());    
+  }
   
-  // tracks produced by TF
-  edm::Handle<L1CSCTrackCollection> hl1Tracks;
-  event().getByLabel(cscTfTrackInputLabel_,hl1Tracks);
-  matchTfTrackToSimTrack(*hl1Tracks.product());
-  
-  // L1 muon candidates after CSC sorter
-  edm::Handle<std::vector<L1MuRegionalCand> > hl1TfCands;
-  event().getByLabel(cscTfCandInputLabel_, hl1TfCands);
-  const std::vector<L1MuRegionalCand>* l1TfCands = hl1TfCands.product();
-  matchTfCandToSimTrack(l1TfCands);
+  if (cscTfCandInputLabel_.label()!=""){
+    // L1 muon candidates after CSC sorter
+    edm::Handle<std::vector<L1MuRegionalCand> > hl1TfCands;
+    event().getByLabel(cscTfCandInputLabel_, hl1TfCands);
+    const std::vector<L1MuRegionalCand>* l1TfCands = hl1TfCands.product();
+    matchTfCandToSimTrack(l1TfCands);
+  }
 }
 
 void 
 TrackMatcher::matchTfTrackToSimTrack(const L1CSCTrackCollection& tracks)
 {
-  for (L1CSCTrackCollection::const_iterator trk = tracks.begin(); trk != tracks.end(); trk++) {
+  for (auto trk = tracks.begin(); trk != tracks.end(); trk++) {
     TFTrack track(&trk->first,&trk->second);
     track.init(ptLUT_, muScalesHd_, muPtScaleHd_);
 
@@ -156,74 +160,78 @@ TrackMatcher::matchTfTrackToSimTrack(const L1CSCTrackCollection& tracks)
     auto p(sh_matcher_->chamberIdsCSC(CSC_ME21));  
     auto pp(sh_matcher_->chamberIdsCSC(CSC_ME22));  
     p.insert(pp.begin(),pp.end());
-    
-    if (verboseTFTrack_ > 1) std::cout << "----------------------------------------------------------" << std::endl;
-    if (verboseTFTrack_ > 1) std::cout << "detids " << std::endl;
-    
+        
     if (p.size()!=0) {
+      if (verboseTFTrack_ > 1) {
+        std::cout << "----------------------------------------------------------" << std::endl;
+        std::cout << "detids " << std::endl;
+        std::copy(p.begin(), p.end(), std::ostream_iterator<int>(std::cout, " "));
+      }
+      
       if (verboseTFTrack_ > 1) std::cout << CSCDetId(*p.begin()) << std::endl;  
       auto hits(sh_matcher_->hitsInChamber(*p.begin()));
       auto gp(sh_matcher_->simHitsMeanPosition(hits));
       if (verboseTFTrack_ > 1) std::cout << gp << std::endl;
+      if (deltaR(gp.eta(), gp.phi(), track.eta(), track.phi()) < 0.001){
+        tfTracks_.push_back(&track);
+        
+        // debugging
+        if (verboseTFTrack_){
+          std::cout << "\tL1CSC TFTrack "<< trk-tracks.begin() << " information:" << std::endl;
+          std::cout << "\tpt (GeV/c) = " << track.pt() << ", eta = " << track.eta() 
+                    << "\t, phi = " << track.phi() << ", dR(sim,L1) = " << track.dr() << std::endl;      
+        }
+        
+        // check the stubs
+        if (verboseTFTrack_ > 1){
+          std::cout << "\t\tStubs:" << std::endl;
+        }
+        for (auto detUnitIt = trk->second.begin(); 
+             detUnitIt != trk->second.end(); detUnitIt++) {
+          const CSCDetId& id = (*detUnitIt).first;
+          if (verboseTFTrack_ > 1){
+            std::cout << "\t\tDetId: " << id << std::endl;
+          }
+          const auto range = (*detUnitIt).second;
+          for (auto digiIt = range.first; digiIt != range.second; digiIt++) {
+            auto lct(*digiIt);
+            // check for valid stubs
+            if (!(lct.isValid())) continue;
+            track.addTriggerDigi(&lct);
+            track.addTriggerDigiId(id);
+            track.addTriggerEtaPhi(intersectionEtaPhi(id, lct.getKeyWG(), lct.getStrip()));
+            track.addTriggerStub(buildTrackStub(lct, id));
+            if (verboseTFTrack_ > 1){
+              std::cout << "\t\tLCT" << digiIt-range.first << ": " << lct << std::endl;
+            }
+          }
+        }      
+      }
     }
+    else{
+      //std::cout << "No station 2 simhits" << std::endl;
+    }
+    
     if (verboseTFTrack_ > 1) std::cout << "----------------------------------------------------------" << std::endl;
     
-    //calculate the dphi with respect to the average simhit position in the 1st station
-    // if 1st station not available, pick 2nd station
-    
-    //deltaR(st.momentum().eta(), st.momentum().phi(), eta_, phi_);
-    //find all detids hit by this simtrack
-    
-    
-    //track.setDR(deltaR);
-
-    // debugging
-    if (verboseTFTrack_){
-      std::cout << "\tL1CSC TFTrack "<< trk-tracks.begin() << " information:" << std::endl;
-      std::cout << "\tpt (GeV/c) = " << track.pt() << ", eta = " << track.eta() 
-                << "\t, phi = " << track.phi() << ", dR(sim,L1) = " << track.dr() << std::endl;      
-    }
-    
-    // match this one if the dR < matchDeltaR
-    if (track.dr() < deltaRTFTrack_) {
-      tfTracks_.push_back(&track);
-    }
-    
-    // check the stubs
-    if (verboseTFTrack_ > 1){
-      std::cout << "\t\tStubs:" << std::endl;
-    }
-    for (CSCCorrelatedLCTDigiCollection::DigiRangeIterator detUnitIt = trk->second.begin(); 
-         detUnitIt != trk->second.end(); detUnitIt++) {
-      const CSCDetId& id = (*detUnitIt).first;
-      if (verboseTFTrack_ > 1){
-        std::cout << "\t\tDetId: " << id << std::endl;
-      }
-      const CSCCorrelatedLCTDigiCollection::Range& range = (*detUnitIt).second;
-      for (CSCCorrelatedLCTDigiCollection::const_iterator digiIt = range.first; digiIt != range.second; digiIt++) {
-        auto lct(*digiIt);
-        // check for valid stubs
-        if (!(lct.isValid())) continue;
-        track.addTriggerDigi(&lct);
-        track.addTriggerDigiId(id);
-        track.addTriggerEtaPhi(intersectionEtaPhi(id, lct.getKeyWG(), lct.getStrip()));
-        track.addTriggerStub(buildTrackStub(lct, id));
-        if (verboseTFTrack_ > 1){
-          std::cout << "\t\tLCT" << digiIt-range.first << ": " << lct << std::endl;
-        }
-      }
-    }
   }
 }
 
 void 
 TrackMatcher::matchTfCandToSimTrack(const std::vector<L1MuRegionalCand>* tracks)
 {
-  for (std::vector<L1MuRegionalCand>::const_iterator trk = tracks->begin(); trk != tracks->end(); trk++) {
+  for (auto trk = tracks->begin(); trk != tracks->end(); trk++) {
     TFCand track(&*trk);
     track.init(ptLUT_, muScalesHd_, muPtScaleHd_);
-    // calculate the DR
-//     track.setDR(this->trk());
+
+    // find the matching TFTrack -- only match once 
+    for (auto& cscTrk : tfTracks()){
+      if (deltaR(track.eta(), track.phi(), cscTrk->eta(), cscTrk->phi()) < 0.001) {
+        track.setTFTrack(cscTrk);
+        std::cout << "Setting TFTrack to the TFCand " << std::endl;
+        break;
+      }
+    }
 
     // debugging
     if (verboseTFCand_){
@@ -231,11 +239,6 @@ TrackMatcher::matchTfCandToSimTrack(const std::vector<L1MuRegionalCand>* tracks)
       std::cout << "\tpt (GeV/c) = " << track.pt() << ", eta = " << track.eta() 
                 << "\t, phi = " << track.phi() << ", dR(sim,L1) = " << track.dr() << std::endl;      
     }
-    
-//     // match this one if the dR < matchDeltaR
-//     if (track.dr() < deltaRTFCand_) {
-//       tfCands_.push_back(track);
-//     }
   }
 }
 

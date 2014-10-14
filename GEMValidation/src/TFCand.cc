@@ -13,8 +13,8 @@ TFCand::~TFCand()
 
 void
 TFCand::init(CSCTFPtLUT* ptLUT,
-	     edm::ESHandle< L1MuTriggerScales > &muScales,
-	     edm::ESHandle< L1MuTriggerPtScale > &muPtScale)
+	     edm::ESHandle<L1MuTriggerScales> &muScales,
+	     edm::ESHandle<L1MuTriggerPtScale> &muPtScale)
 {
   pt_ = muPtScale->getPtScale()->getLowEdge(l1Cand_->pt_packed()) + 1.e-6;
   eta_ = muScales->getRegionalEtaScale(2)->getCenter(l1Cand_->eta_packed());

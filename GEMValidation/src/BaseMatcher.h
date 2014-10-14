@@ -34,6 +34,9 @@
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
 #include "DataFormats/MuonDetId/interface/ME0DetId.h"
 
+#include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
+
 inline bool is_gem(unsigned int detId) {
   return (DetId(detId)).subdetId() == MuonSubdetId::GEM;
 }
