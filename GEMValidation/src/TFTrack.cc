@@ -8,11 +8,9 @@ TFTrack::TFTrack(const csc::L1Track* t, const CSCCorrelatedLCTDigiCollection* lc
   
   for (auto detUnitIt = lcts->begin(); detUnitIt != lcts->end(); detUnitIt++) {
     const CSCDetId& id = (*detUnitIt).first;
-    //std::cout << "DetId " << id << std::endl;
     const auto range = (*detUnitIt).second;
     for (auto digiIt = range.first; digiIt != range.second; digiIt++) {
       if (!(*digiIt).isValid()) continue;
-      //std::cout << "Digi " << *digiIt << std::endl;
       addTriggerDigi(&(*digiIt));
       addTriggerDigiId(id);
     }
@@ -31,7 +29,6 @@ TFTrack::init(CSCTFPtLUT* ptLUT,
 	      edm::ESHandle< L1MuTriggerPtScale > &muPtScale)
 {
   // This section is copied from L1Trigger/CSCTrackFinder/interface/CSCTFMuonSorter.h
-
   unsigned gbl_phi(l1track_->localPhi() + ((l1track_->sector() - 1)*24) + 6);
   if(gbl_phi > 143) gbl_phi -= 143;
   phi_packed_ = gbl_phi & 0xff;
@@ -46,8 +43,9 @@ TFTrack::init(CSCTFPtLUT* ptLUT,
   pt_packed_ = gpt & 0x1f;
     
   // calculate pt, eta and phi (don't forget to store the sign)
+  const int sign(l1track_->endcap()==1 ? 1 : -1);
   pt_ = muPtScale->getPtScale()->getLowEdge(pt_packed_) + 1.e-6;
-  eta_ = muScales->getRegionalEtaScale(2)->getCenter(l1track_->eta_packed()) * l1track_->endcap(); 
+  eta_ = muScales->getRegionalEtaScale(2)->getCenter(l1track_->eta_packed()) * sign; 
   phi_ = normalizedPhi(muScales->getPhiScale()->getLowEdge(phi_packed_));
 }
 
