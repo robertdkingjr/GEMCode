@@ -67,22 +67,23 @@ class DigiPlotter():
 class GEMCSCStubPlotter():
   def __init__(self):
     self.inputDir = os.getenv("CMSSW_BASE") + "/src/"
-    self.inputFile = "gem-csc_stub_ana.root"
+    self.inputFile = "out_ana_elehits.root"
     self.targetDir = "gem_csc_matching/"
     self.ext = ".png"
     self.analyzer = "GEMCSCAnalyzer"
     self.effSt = "trk_eff_"
-    self.stations = enum('ALL','ME11','ME1a','ME1b','ME12','ME13','ME21','ME22','ME31','ME32','ME41','ME42')
-    self.stationsToUse = [self.stations.ME11,self.stations.ME1a,self.stations.ME1b,
-                          self.stations.ME21,self.stations.ME31,self.stations.ME41]
+    self.stations = enum('CSC_ALL','CSC_ME11','CSC_ME1a','CSC_ME1b','CSC_ME12','CSC_ME13','CSC_ME21','CSC_ME22','CSC_ME31','CSC_ME32','CSC_ME41','CSC_ME42')
+    self.stationsToUse = [self.stations.CSC_ME11,self.stations.CSC_ME1a,self.stations.CSC_ME1b,
+                          self.stations.CSC_ME21,self.stations.CSC_ME31,self.stations.CSC_ME41]
     self.file = TFile.Open(self.inputDir + self.inputFile)
     self.dirAna = (self.file).Get(self.analyzer)
     self.treeEffSt = []
     for x in self.stationsToUse:
       self.treeEffSt.append(self.dirAna.Get(self.effSt + self.stations.reverse_mapping[x]))
+    self.treeDelta = self.dirAna.Get("trk_delta")
     self.yMin = 0.8
     self.yMax = 1.02
-    self.etaMin = 1.5
+    self.etaMin = 0
     self.etaMax = 2.5
-    self.pu = 140
-    self.matchAlctGem = True
+    self.pu = 0
+    self.matchAlctGem = False

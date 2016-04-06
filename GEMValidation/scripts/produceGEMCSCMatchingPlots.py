@@ -22,7 +22,8 @@ if __name__ == "__main__":
   plotter = GEMCSCStubPlotter()
   for i in range(len(plotter.stationsToUse)):
     st = plotter.stationsToUse[i]
-    print "Processing station ", plotter.stations.reverse_mapping[st]
+    print "Processing station ", st, plotter.stations.reverse_mapping[st]
+    GEMCSCresolution(plotter)
     simTrackToCscSimHitMatching(plotter,st)
     simTrackToCscStripsWiresMatching(plotter,st)
     simTrackToCscStripsWiresMatching_2(plotter,st)
@@ -30,3 +31,4 @@ if __name__ == "__main__":
     simTrackToCscAlctClctMatching_2(plotter,st)
     simTrackToCscLctMatching(plotter,st)
 #    simTrackToCscMpLctMatching(plotter,st)
+  
