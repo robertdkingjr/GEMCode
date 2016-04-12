@@ -7,7 +7,7 @@ from cuts import *
 def draw_occ(target_dir, c_title, ext, t, title, h_name, h_bins, to_draw, cut, opt = ""):
   gStyle.SetStatStyle(0)
   gStyle.SetOptStat(1110)
-  c = TCanvas("c","c",600,600)
+  c = TCanvas("c","c",800,600)
   c.Clear()
   t.Draw(to_draw + ">>" + h_name + h_bins, cut)
   h = TH2F(gDirectory.Get(h_name))
@@ -23,7 +23,7 @@ def draw_occ(target_dir, c_title, ext, t, title, h_name, h_bins, to_draw, cut, o
 def draw_1D(target_dir, c_title, ext, t, title, h_name, h_bins, to_draw, cut, opt = ""):
   gStyle.SetStatStyle(0)
   gStyle.SetOptStat(1110)
-  c = TCanvas("c","c",600,600)
+  c = TCanvas("c","c",800,600)
   c.Clear()
   t.Draw(to_draw + ">>" + h_name + h_bins, cut) 
   h = TH1F(gDirectory.Get(h_name).Clone(h_name))

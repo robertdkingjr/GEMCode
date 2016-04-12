@@ -67,7 +67,7 @@ class DigiPlotter():
 class GEMCSCStubPlotter():
   def __init__(self):
     self.inputDir = os.getenv("CMSSW_BASE") + "/src/"
-    self.inputFile = "out_ana_elehits.root"
+    self.inputFile = "out_ana_elehits.test.root"
     self.targetDir = "gem_csc_matching/"
     self.ext = ".png"
     self.analyzer = "GEMCSCAnalyzer"

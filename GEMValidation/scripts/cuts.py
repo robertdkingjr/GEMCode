@@ -151,6 +151,9 @@ ok_lct_hs = AND(ok_lct_hs_min,ok_lct_hs_max)
 ok_lcths1 = AND(ok_lct1,ok_lct_hs)
 ok_lcths2 = AND(ok_lct2,ok_lct_hs)
 
+ok_seg1 = TCut("(has_csc_segment&1) > 0")
+ok_seg2 = TCut("(has_csc_segment&2) > 0")
+
 ## GEM simhit
 ok_gsh1 = TCut("(has_gem_sh&1) > 0")
 ok_gsh2 = TCut("(has_gem_sh&2) > 0")

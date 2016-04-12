@@ -20,10 +20,10 @@ from GEMCSCValidation import *
 if __name__ == "__main__":  
 
   plotter = GEMCSCStubPlotter()
+  GEMCSCresolution(plotter)
   for i in range(len(plotter.stationsToUse)):
     st = plotter.stationsToUse[i]
     print "Processing station ", st, plotter.stations.reverse_mapping[st]
-    GEMCSCresolution(plotter)
     simTrackToCscSimHitMatching(plotter,st)
     simTrackToCscStripsWiresMatching(plotter,st)
     simTrackToCscStripsWiresMatching_2(plotter,st)
