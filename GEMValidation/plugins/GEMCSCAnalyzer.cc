@@ -173,6 +173,7 @@ struct MyTrackEff
   Char_t has_rpc_dg; // bit1: in odd, bit2: even
   Int_t strip_rpcdg_odd; // median digis' strip
   Int_t strip_rpcdg_even;
+  Char_t has_rpc_rh; // bit1: in odd, bit2: even
 
   Char_t bx_pad_odd;
   Char_t bx_pad_even;
@@ -377,6 +378,7 @@ void MyTrackEff::init()
   has_rpc_dg = 0; // bit1: in odd, bit2: even
   strip_rpcdg_odd = -1;
   strip_rpcdg_even = -1;
+  has_rpc_rh = 0;
 
   hsfromrpc_odd = 0;
   hsfromrpc_even = 0;
@@ -608,6 +610,7 @@ TTree* MyTrackEff::book(TTree *t, const std::string & name)
   t->Branch("strip_rpcdg_even", &strip_rpcdg_even);
   t->Branch("hsfromrpc_odd", &hsfromrpc_odd);
   t->Branch("hsfromrpc_even", &hsfromrpc_even);
+  t->Branch("has_rpc_rh", &has_rpc_rh);
 
   t->Branch("bx_pad_odd", &bx_pad_odd);
   t->Branch("bx_pad_even", &bx_pad_even);
@@ -958,6 +961,7 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
   const GEMDigiMatcher& match_gd = match.gemDigis();
   const GEMRecHitMatcher& match_gem_rh = match.gemRecHits();
   const RPCDigiMatcher& match_rd = match.rpcDigis();
+  const RPCRecHitMatcher& match_rpc_rh = match.rpcRecHits();
   const CSCDigiMatcher& match_cd = match.cscDigis();
   const CSCStubMatcher& match_lct = match.cscStubs();
   const CSCRecHitMatcher& match_csc_rh = match.cscRecHits();
@@ -992,6 +996,7 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
     const int st(detIdToMEStation(id.station(),id.ring()));
     if (stations_to_use_.count(st) == 0) continue;
     int nlayers(match_sh.nLayersWithHitsInSuperChamber(d));
+    std::cout << "n csc hit layers 1: " << id << " " << nlayers << std::endl;
     if (id.station() == 1 and id.chamber()%2 == 1) etrk_[0].chamber_ME1_csc_sh |= 1;
     if (id.station() == 1 and id.chamber()%2 == 0) etrk_[0].chamber_ME1_csc_sh |= 2;
     if (id.station() == 2 and id.chamber()%2 == 1) etrk_[0].chamber_ME2_csc_sh |= 1;
@@ -1006,12 +1011,13 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
      
       auto rawId(co_id.rawId());
       if (csc_simhits.find(rawId) != csc_simhits.end()) {
-	nlayers = nlayers+match_sh.nLayersWithHitsInSuperChamber(rawId);
-
+        nlayers = nlayers+match_sh.nLayersWithHitsInSuperChamber(rawId);
+        std::cout << "n csc hit layers 2: " << nlayers << std::endl;
       } 
       
     }
-    
+
+    std::cout << "n csc hit layers 3: " << nlayers << std::endl;
     if (nlayers < minNHitsChamberCSCSimHit_) continue;
     
     GlobalVector ym = match_sh.simHitsMeanMomentum(match_sh.hitsInChamber(d));
@@ -1031,9 +1037,11 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
     
     if (odd) gp_sh_odd[st] = gp;
     else gp_sh_even[st] = gp;
-    // std::cout<<"nlayer "<<nlayers <<" odd: "<< etrk_[st].nlayers_csc_sh_odd<<" even: "<<etrk_[st].nlayers_csc_sh_even
-//	 <<" "<< (odd ? "odd":"even")<<" csc det " <<id <<std::endl;
-  //  std::cout<<" "<<((etrk_[st].has_csc_sh&1)>0 ? "odd true":"odd false" ) <<" "<<((etrk_[st].has_csc_sh&2)>0 ? "even true":"even false")<<std::endl;
+    
+    std::cout<<"nlayer "<<nlayers <<" odd: "<< etrk_[st].nlayers_csc_sh_odd<<" even: "<<etrk_[st].nlayers_csc_sh_even
+             <<" "<< (odd ? "odd":"even")<<" csc det " <<id <<std::endl;
+    std::cout<<" "<<((etrk_[st].has_csc_sh&1)>0 ? "odd true":"odd false" ) <<" "<<((etrk_[st].has_csc_sh&2)>0 ? "even true":"even false")<<std::endl;
+    
     // case ME11
     if (st==2 or st==3){
       if (odd) etrk_[1].has_csc_sh |= 1;
@@ -1357,6 +1365,12 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
     const bool odd(id.chamber()%2==1);
     if (odd) etrk_[st].has_csc_segment |= 1;
     else etrk_[st].has_csc_segment |= 2;
+
+    // case ME11
+    if (st==2 or st==3){
+      if (odd) etrk_[1].has_csc_segment |= 1;
+      else etrk_[1].has_csc_segment |= 2;
+    }
   }
 
    //for GEMs in station1, it will be also filled in ME11
@@ -1677,7 +1691,12 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
   for(auto d: match_gem_rh.chamberIds())
   {
     GEMDetId id(d);
-    const int st(detIdToMEStation(id.station(),id.ring()));
+    int MEStation;
+    if (id.station() == 3) MEStation = 2;
+    else if (id.station() == 2) continue;
+    else MEStation = id.station();
+
+    const int st(detIdToMEStation(MEStation,id.ring()));
     if (stations_to_use_.count(st) == 0) continue;
 
     const bool odd(id.chamber()%2==1);
@@ -1685,7 +1704,23 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
     else etrk_[st].has_gem_rh |= 2;
   }
 
- //general propagation 
+  // RPC rechits
+  for(auto d: match_rpc_rh.chamberIds())
+  {
+    RPCDetId id(d);
+
+    const int st(detIdToMEStation(id.station(), id.ring()));
+    if (stations_to_use_.count(st) == 0) continue;
+
+    int cscchamber = CSCTriggerNumbering::chamberFromTriggerLabels(id.sector(), 0, id.station(), id.subsector());
+    cscchamber = (cscchamber+16)%18+1; 
+
+    const bool odd(cscchamber%2==1);
+    if (odd) etrk_[st].has_rpc_rh |= 1;
+    else etrk_[st].has_rpc_rh |= 2;
+  }
+
+  //general propagation 
   auto propagate_odd_gp(match_track.simTrackPropagateGPs_odd());
   auto propagate_even_gp(match_track.simTrackPropagateGPs_even());
   auto propagate_interstat_odd(match_track.interStatPropagation_odd());
@@ -2229,14 +2264,12 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
           deltaPhi_sh3_segment = iDeltaPhi;
           iSegmentBest = iSegment;
         }
-        cout<<"\ttest csc_seg_gp "<< iSegment <<": " <<csc_seg_gp<< " " <<csc_seg_gp.phi()-csc_sh_l3_gp.phi() <<endl;
-        std::cout << "\t" << s << std::endl;
         ++iSegment;
       }
       if (segments.size()>0){
         auto segment = segments[iSegmentBest];
         GlobalPoint csc_seg_gp = match_cscrh.globalPoint(segment);
-        cout<<"test csc_seg_gp  "<<csc_seg_gp<<endl;
+        cout<<"\tbest csc_seg_gp  "<<csc_seg_gp<<endl;
       }
       //auto bestSegment = match_cscrh.bestCSCSegment(csc_d);
       //GlobalPoint best_csc_seg_gp = match_cscrh.globalPoint(bestSegment);

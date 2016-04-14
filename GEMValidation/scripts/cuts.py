@@ -167,6 +167,12 @@ ok_gdg2 = TCut("(has_gem_dg&2) > 0")
 ok_pad1 = TCut("(has_gem_pad&1) > 0")
 ok_pad2 = TCut("(has_gem_pad&2) > 0")
 
+ok_grh1 = TCut("(has_gem_rh&1) > 0")
+ok_grh2 = TCut("(has_gem_rh&2) > 0")
+
+ok_grh1 = TCut("(has_rpc_rh&1) > 0")
+ok_grh2 = TCut("(has_rpc_rh&2) > 0")
+
 ok_dphi1 = TCut("dphi_pad_odd < 10.")
 ok_dphi2 = TCut("dphi_pad_even < 10.")
 

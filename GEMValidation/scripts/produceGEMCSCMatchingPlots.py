@@ -31,4 +31,5 @@ if __name__ == "__main__":
     simTrackToCscAlctClctMatching_2(plotter,st)
     simTrackToCscLctMatching(plotter,st)
 #    simTrackToCscMpLctMatching(plotter,st)
-  
+    simTrackToCscSegmentsMatching(plotter,st)      
+    simTrackToGemRechitsMatching(plotter,st)

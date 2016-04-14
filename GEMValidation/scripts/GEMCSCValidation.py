@@ -70,17 +70,6 @@ def GEMCSCresolution(plotter):
     draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st2_odd", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
             "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==2 && odd==1")
 
-    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st1_even_slice1", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
-            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && odd==0 && abs(dphi_gem_sh_l1_csc_sh_l1)<0.001")
-    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st1_even_slice2", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
-            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && odd==0 && abs(dphi_gem_sh_l1_csc_sh_l1)>0.001 && abs(dphi_gem_sh_l1_csc_sh_l1)<0.002")
-    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st1_even_slice3", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
-            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && odd==0 && abs(dphi_gem_sh_l1_csc_sh_l1)>0.002 && abs(dphi_gem_sh_l1_csc_sh_l1)<0.003")
-    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st1_even_slice4", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
-            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && odd==0 && abs(dphi_gem_sh_l1_csc_sh_l1)>0.003 && abs(dphi_gem_sh_l1_csc_sh_l1)<0.004")
-    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st1_even_slice5", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
-            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && odd==0 && abs(dphi_gem_sh_l1_csc_sh_l1)>0.004 && abs(dphi_gem_sh_l1_csc_sh_l1)<0.005")
-
     ## 2D resolution
     draw_2D(plotter.targetDir, "gem_csc_sim_digi_resolution_st1_even_2D", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_sh_l1_csc_sh_l1-dphi_gem_dg_csc_dg", 
             "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_sh_l1_csc_sh_l1-dphi_gem_dg_csc_dg","station==1 && odd==0","COLZ")
@@ -157,7 +146,7 @@ def simTrackToCscSimHitMatching(plotter,st=1):
     base.GetYaxis().SetTitleSize(0.05)
     index = plotter.stationsToUse.index(st)
 
-    h1 = draw_geff(plotter.treeEffSt[index], title, h_bins, toPlot, TCut(""), ok_sh1, "same")
+    h1 = draw_geff(plotter.treeEffSt[index], title, h_bins, toPlot, TCut(""), OR(ok_sh1,ok_sh2), "same")
 
     leg = TLegend(0.45,0.2,.75,0.35, "", "brNDC")
     leg.SetBorderSize(0)
@@ -175,6 +164,8 @@ def simTrackToCscSimHitMatching(plotter,st=1):
 
     c = TCanvas("c","c",700,450)
     c.Clear()
+    topTitle = " " * 11 + "GEM SimHit matching" + " " * 35 + "CMS Simulation Preliminary"
+    title = "%s;%s;%s"%(topTitle,xTitle,yTitle)
     base = TH1F("base",title,nBins,minBin,maxBin)
     base.SetMinimum(plotter.yMin)
     base.SetMaximum(plotter.yMax)
@@ -185,7 +176,7 @@ def simTrackToCscSimHitMatching(plotter,st=1):
     base.GetYaxis().SetTitleSize(0.05)
     index = plotter.stationsToUse.index(st)
 
-    h1 = draw_geff(plotter.treeEffSt[index], title, h_bins, toPlot, TCut(""), TCut("(has_gem_sh) > 0"), "same")
+    h1 = draw_geff(plotter.treeEffSt[index], title, h_bins, toPlot, TCut(""), OR(ok_gsh1,ok_gsh2), "same")
 
     leg = TLegend(0.45,0.2,.75,0.35, "", "brNDC")
     leg.SetBorderSize(0)
@@ -194,7 +185,7 @@ def simTrackToCscSimHitMatching(plotter,st=1):
     leg.AddEntry(h1, "SimHits","l")
     leg.Draw("same")
     
-    #csc = drawCscLabel(plotter.stations.reverse_mapping[st], 0.77,0.87,0.05)
+    csc = drawCscLabel(plotter.stations.reverse_mapping[st], 0.77,0.87,0.05)
     pul = drawPuLabel(plotter.pu,0.17,0.17,0.05)
 #    tex = drawEtaLabel(plotter.etaMin,plotter.etaMax,0.2,0.8,0.05)
 
@@ -590,7 +581,7 @@ def simTrackToCscMpLctMatching(plotter,st=1):
 
 
 #_______________________________________________________________________________
-def simTrackToCscStripsWiresMatching(plotter,st=1):
+def simTrackToCscSegmentsMatching(plotter,st=1):
 
     gStyle.SetTitleStyle(0);
     gStyle.SetTitleAlign(13); ##coord in top left
@@ -649,3 +640,65 @@ def simTrackToCscStripsWiresMatching(plotter,st=1):
     #tex = drawEtaLabel(plotter.etaMin,plotter.etaMax,0.2,0.8,0.05)
 
     c.Print("%scsc_segment_matching_efficiency_%s%s"%(plotter.targetDir,plotter.stations.reverse_mapping[st],plotter.ext))
+
+
+#_______________________________________________________________________________
+def simTrackToGemRechitsMatching(plotter,st=1):
+
+    gStyle.SetTitleStyle(0);
+    gStyle.SetTitleAlign(13); ##coord in top left
+    gStyle.SetTitleX(0.);
+    gStyle.SetTitleY(1.);
+    gStyle.SetTitleW(1);
+    gStyle.SetTitleH(0.058);
+    gStyle.SetTitleBorderSize(0);
+    
+    gStyle.SetPadLeftMargin(0.126);
+    gStyle.SetPadRightMargin(0.04);
+    gStyle.SetPadTopMargin(0.06);
+    gStyle.SetPadBottomMargin(0.13);
+    gStyle.SetOptStat(0);
+    gStyle.SetMarkerStyle(1);
+    
+    ok_eta = TCut("TMath::Abs(eta)>%f && TMath::Abs(eta)<%f"%(plotter.etaMin,plotter.etaMax))
+
+    ## variables for the plot
+    topTitle = " " * 11 + "GEM Rechit matching" + " " * 35 + "CMS Simulation Preliminary"
+    xTitle = "Generated muon #eta"
+    yTitle = "Efficiency"
+    title = "%s;%s;%s"%(topTitle,xTitle,yTitle)
+    toPlot = "TMath::Abs(eta)"
+    h_bins = "(100,%f,%f)"%(plotter.etaMin,plotter.etaMax)
+    nBins = int(h_bins[1:-1].split(',')[0])
+    minBin = float(h_bins[1:-1].split(',')[1])
+    maxBin = float(h_bins[1:-1].split(',')[2])
+
+    c = TCanvas("c","c",700,450)
+    c.Clear()
+    base  = TH1F("base",title,nBins,minBin,maxBin)
+    base.SetMinimum(plotter.yMin)
+    base.SetMaximum(plotter.yMax)
+    base.Draw("")
+    base.GetXaxis().SetLabelSize(0.05)
+    base.GetYaxis().SetLabelSize(0.05)
+    base.GetXaxis().SetTitleSize(0.05)
+    base.GetYaxis().SetTitleSize(0.05)
+
+    index = plotter.stationsToUse.index(st)
+
+    h1 = draw_geff(plotter.treeEffSt[index], title, h_bins, toPlot, ok_gsh1, ok_grh1, "same", kRed)
+    h2 = draw_geff(plotter.treeEffSt[index], title, h_bins, toPlot, ok_gsh2, ok_grh2, "same")
+   
+    leg = TLegend(0.45,0.2,.75,0.35, "", "brNDC")
+    leg.SetBorderSize(0)
+    leg.SetFillStyle(0)
+    leg.SetTextSize(0.06)
+    leg.AddEntry(h1, "Rechit even","l")
+    leg.AddEntry(h2, "Rechit odd","l")
+    leg.Draw("same")
+    
+    gem = drawCscLabel(plotter.stations.reverse_mapping[st], 0.77,0.87,0.05)
+    pul = drawPuLabel(plotter.pu,0.17,0.17,0.05)
+    #tex = drawEtaLabel(plotter.etaMin,plotter.etaMax,0.2,0.8,0.05)
+
+    c.Print("%sgem_rechit_matching_efficiency_%s%s"%(plotter.targetDir,plotter.stations.reverse_mapping[st],plotter.ext))
