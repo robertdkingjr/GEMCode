@@ -61,16 +61,26 @@ def GEMCSCresolution(plotter):
     draw_1D(plotter.targetDir, "gem_csc_sim_stub_resolution_st2_odd", plotter.ext, plotter.treeDelta, "title", "h_", "(200,-0.1,0.1)", 
             "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_pad_csc_lct","station==2 && odd==1")
 
-    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st1_even", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
-            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && odd==0")
-    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st1_odd", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
-            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && odd==1")
-    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st2_even", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
-            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==2 && odd==0")
-    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_st2_odd", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
-            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==2 && odd==1")
+    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME11_even_1D_lowPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
+            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && (ring==1 || ring==4) && odd==0 && pt<=10")
+    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME11_odd_1D_lowPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
+            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && (ring==1 || ring==4) && odd==1 && pt<=10")
+    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME21_even_1D_lowPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
+            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==2 && ring==1 && odd==0 && pt<=10")
+    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME21_odd_1D_lowPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
+            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==2 && ring==1 && odd==1 && pt<=10")
+
+    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME11_even_1D_highPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
+            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && (ring==1 || ring==4) && odd==0 && pt>=30")
+    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME11_odd_1D_highPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
+            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && (ring==1 || ring==4) && odd==1 && pt>=30")
+    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME21_even_1D_highPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
+            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==2 && ring==1 && odd==0 && pt>=30")
+    draw_1D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME21_odd_1D_highPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", "h_", "(200,-0.01,0.01)", 
+            "dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==2 && ring==1 && odd==1 && pt>=30")
 
     ## 2D resolution
+    """
     draw_2D(plotter.targetDir, "gem_csc_sim_digi_resolution_st1_even_2D", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_sh_l1_csc_sh_l1-dphi_gem_dg_csc_dg", 
             "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_sh_l1_csc_sh_l1-dphi_gem_dg_csc_dg","station==1 && odd==0","COLZ")
     draw_2D(plotter.targetDir, "gem_csc_sim_digi_resolution_st1_odd_2D", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_sh_l1_csc_sh_l1-dphi_gem_dg_csc_dg", 
@@ -89,16 +99,27 @@ def GEMCSCresolution(plotter):
             "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_sh_l1_csc_sh_l1-dphi_gem_pad_csc_lct","station==2 && odd==0","COLZ")
     draw_2D(plotter.targetDir, "gem_csc_sim_stub_resolution_st2_odd_2D", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_sh_l1_csc_sh_l1-dphi_gem_pad_csc_lct", 
             "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_sh_l1_csc_sh_l1-dphi_gem_pad_csc_lct","station==2 && odd==1","COLZ")
+    """
 
+    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME11_even_2D_lowPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1", 
+            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1","station==1 && (ring==1 || ring==4) && odd==0 && pt<=10","COLZ")
+    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME11_odd_2D_lowPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1", 
+            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1","station==1 && (ring==1 || ring==4) && odd==1 && pt<=10","COLZ")
 
-    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_st1_even_2D", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", 
-            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && odd==0","COLZ")
-    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_st1_odd_2D", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", 
-            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==1 && odd==1","COLZ")
-    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_st2_even_2D", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", 
-            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==2 && odd==0","COLZ")
-    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_st2_odd_2D", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg", 
-            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_sh_l1_csc_sh_l1-dphi_gem_rh_csc_seg","station==2 && odd==1","COLZ")
+    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME11_even_2D_highPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1", 
+            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1","station==1 && ring==1 && odd==0 && pt>=30","COLZ")
+    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME11_odd_2D_highPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1", 
+            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1","station==1 && ring==1 && odd==1 && pt>=30","COLZ")
+
+    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME21_even_2D_lowPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1", 
+            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1","station==2 && (ring==1 || ring==4) && odd==0 && pt<=10","COLZ")
+    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME21_odd_2D_lowPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1", 
+            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1","station==2 && (ring==1 || ring==4) && odd==1 && pt<=10","COLZ")
+
+    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME21_even_2D_highPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1", 
+            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1","station==2 && ring==1 && odd==0 && pt>=30","COLZ")
+    draw_2D(plotter.targetDir, "gem_csc_sim_reco_resolution_ME21_odd_2D_highPt", plotter.ext, plotter.treeDelta, ";dphi_gem_sh_l1_csc_sh_l1;dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1", 
+            "h_", "(200,-0.1,0.1,200,-0.1,0.1)", "dphi_gem_sh_l1_csc_sh_l1:dphi_gem_rh_csc_seg-dphi_gem_sh_l1_csc_sh_l1","station==2 && ring==1 && odd==1 && pt>=30","COLZ")
 
     ## 1D resolution vs SIM bending angle
     

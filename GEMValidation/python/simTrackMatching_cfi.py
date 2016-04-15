@@ -256,7 +256,7 @@ SimTrackMatching = cms.PSet(
         minNHitsChamber = cms.int32(4),
     ),
     dtLocalTrigger = cms.PSet(
-        verbose = cms.int32(1),
+        verbose = cms.int32(0),
         validInputTags = cms.VInputTag(cms.InputTag("simDtTriggerPrimitiveDigis"),
                                        cms.InputTag("hltMuonDTDigis")),
         run = cms.bool(True),

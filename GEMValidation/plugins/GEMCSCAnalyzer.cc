@@ -51,6 +51,7 @@ struct MyTrackChamberDelta
   Int_t station;
   Int_t chamber;
   Int_t roll;
+  Int_t ring;
   Int_t bend;
   Float_t pt, eta, phi;
   Float_t csc_sh_phi;
@@ -996,7 +997,6 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
     const int st(detIdToMEStation(id.station(),id.ring()));
     if (stations_to_use_.count(st) == 0) continue;
     int nlayers(match_sh.nLayersWithHitsInSuperChamber(d));
-    std::cout << "n csc hit layers 1: " << id << " " << nlayers << std::endl;
     if (id.station() == 1 and id.chamber()%2 == 1) etrk_[0].chamber_ME1_csc_sh |= 1;
     if (id.station() == 1 and id.chamber()%2 == 0) etrk_[0].chamber_ME1_csc_sh |= 2;
     if (id.station() == 2 and id.chamber()%2 == 1) etrk_[0].chamber_ME2_csc_sh |= 1;
@@ -1012,12 +1012,10 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
       auto rawId(co_id.rawId());
       if (csc_simhits.find(rawId) != csc_simhits.end()) {
         nlayers = nlayers+match_sh.nLayersWithHitsInSuperChamber(rawId);
-        std::cout << "n csc hit layers 2: " << nlayers << std::endl;
       } 
       
     }
 
-    std::cout << "n csc hit layers 3: " << nlayers << std::endl;
     if (nlayers < minNHitsChamberCSCSimHit_) continue;
     
     GlobalVector ym = match_sh.simHitsMeanMomentum(match_sh.hitsInChamber(d));
@@ -1038,9 +1036,9 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
     if (odd) gp_sh_odd[st] = gp;
     else gp_sh_even[st] = gp;
     
-    std::cout<<"nlayer "<<nlayers <<" odd: "<< etrk_[st].nlayers_csc_sh_odd<<" even: "<<etrk_[st].nlayers_csc_sh_even
-             <<" "<< (odd ? "odd":"even")<<" csc det " <<id <<std::endl;
-    std::cout<<" "<<((etrk_[st].has_csc_sh&1)>0 ? "odd true":"odd false" ) <<" "<<((etrk_[st].has_csc_sh&2)>0 ? "even true":"even false")<<std::endl;
+    // std::cout<<"nlayer "<<nlayers <<" odd: "<< etrk_[st].nlayers_csc_sh_odd<<" even: "<<etrk_[st].nlayers_csc_sh_even
+    //          <<" "<< (odd ? "odd":"even")<<" csc det " <<id <<std::endl;
+    // std::cout<<" "<<((etrk_[st].has_csc_sh&1)>0 ? "odd true":"odd false" ) <<" "<<((etrk_[st].has_csc_sh&2)>0 ? "even true":"even false")<<std::endl;
     
     // case ME11
     if (st==2 or st==3){
@@ -2206,13 +2204,6 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
       auto csc_sh_l5 = match_sh.hitsInDetId(csc_id_l5.rawId());
       auto csc_sh_l6 = match_sh.hitsInDetId(csc_id_l6.rawId());
 
-      std::cout << "csc_sh_l1.size() " << csc_sh_l1.size() << std::endl;
-      std::cout << "csc_sh_l2.size() " << csc_sh_l2.size() << std::endl;
-      std::cout << "csc_sh_l3.size() " << csc_sh_l3.size() << std::endl;
-      std::cout << "csc_sh_l4.size() " << csc_sh_l4.size() << std::endl;
-      std::cout << "csc_sh_l5.size() " << csc_sh_l5.size() << std::endl;
-      std::cout << "csc_sh_l6.size() " << csc_sh_l6.size() << std::endl;
-
       GlobalPoint csc_sh_l1_gp = match_sh.simHitsMeanPosition(csc_sh_l1);
       GlobalPoint csc_sh_l2_gp = match_sh.simHitsMeanPosition(csc_sh_l2);
       GlobalPoint csc_sh_l3_gp = match_sh.simHitsMeanPosition(csc_sh_l3);
@@ -2231,7 +2222,7 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
       if (csc_sh_l1.size()==0 and csc_sh_l2.size()==0 and csc_sh_l3.size()==0 and csc_sh_l4.size()==0 and csc_sh_l5.size()==0) 
         csc_sh_l1_gp = csc_sh_l6_gp;
 
-      cout<<"test csc_sh_gp  "<<csc_sh_gp<<" "<<csc_sh_l1_gp<<" "<<csc_sh_gp.phi() - csc_sh_l1_gp.phi()<<endl;
+      // cout<<"test csc_sh_gp  "<<csc_sh_gp<<" "<<csc_sh_l1_gp<<" "<<csc_sh_gp.phi() - csc_sh_l1_gp.phi()<<endl;
         
       // CSC trigger strips and wire digis
       auto csc_sd = match_cd.stripDigisInChamber(csc_d);
@@ -2239,8 +2230,8 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
 
       GlobalPoint csc_dg_gp = match_cd.digisCSCMedianPosition(csc_sd, csc_wd);
 
-      GlobalPoint csc_sd_gp = match_cd.digisMeanPosition(csc_sd);
-      cout<<"test csc_dg_gp  "<<csc_sd_gp<<" "<<csc_dg_gp<<" "<<csc_sd_gp.phi() - csc_dg_gp.phi()<<endl;
+      // GlobalPoint csc_sd_gp = match_cd.digisMeanPosition(csc_sd);
+      // cout<<"test csc_dg_gp  "<<csc_sd_gp<<" "<<csc_dg_gp<<" "<<csc_sd_gp.phi() - csc_dg_gp.phi()<<endl;
 
       if ( std::abs(csc_dg_gp.z()) < 0.001 ) { cout<<"bad csc_dg_gp"<<endl; continue; }
 
@@ -2251,9 +2242,9 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
         csc_lct_gp = match_lct.digiPosition(lct_digi);
       }
  
-      // segments
+      // pick the best CSC segment -- closest to the simhits in layer 3
       auto segments = match_cscrh.cscSegmentsInChamber(csc_d);
-      std::cout << "Number of segments " << segments.size() << std::endl;
+      // std::cout << "Number of segments " << segments.size() << std::endl;
       int iSegment = 0;
       int iSegmentBest = 0;
       double deltaPhi_sh3_segment = 999.;
@@ -2266,11 +2257,11 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
         }
         ++iSegment;
       }
-      if (segments.size()>0){
-        auto segment = segments[iSegmentBest];
-        GlobalPoint csc_seg_gp = match_cscrh.globalPoint(segment);
-        cout<<"\tbest csc_seg_gp  "<<csc_seg_gp<<endl;
-      }
+      // if (segments.size()>0){
+      //   auto segment = segments[iSegmentBest];
+      //   GlobalPoint csc_seg_gp = match_cscrh.globalPoint(segment);
+      //   cout<<"\tbest csc_seg_gp  "<<csc_seg_gp<<endl;
+      // }
       //auto bestSegment = match_cscrh.bestCSCSegment(csc_d);
       //GlobalPoint best_csc_seg_gp = match_cscrh.globalPoint(bestSegment);
       
@@ -2288,7 +2279,7 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
         if (gem_station != csc_id.station()) continue;        
 
         auto gem_sh = match_sh.hitsInSuperChamber(gem_d);
-        std::cout << "gem_sh.size() " << gem_sh.size() << std::endl;
+        // std::cout << "gem_sh.size() " << gem_sh.size() << std::endl;
         GlobalPoint gem_sh_gp = match_sh.simHitsMeanPosition(gem_sh);
 
         GEMDetId gem_id_l1(gem_id.region(), gem_id.ring(), gem_id.station(), 1, gem_id.chamber(), 0);
@@ -2297,17 +2288,10 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
         auto gem_sh_l1 = match_sh.hitsInChamber(gem_id_l1.rawId());
         auto gem_sh_l2 = match_sh.hitsInChamber(gem_id_l2.rawId());
 
-        std::cout << "gem_id " << gem_id << std::endl;
-        std::cout << "gem_id_l1 " << gem_id_l1 << std::endl;
-        std::cout << "gem_id_l2 " << gem_id_l2 << std::endl;
-
-        std::cout << "gem_sh_l1.size() " << gem_sh_l1.size() << std::endl;
-        std::cout << "gem_sh_l2.size() " << gem_sh_l2.size() << std::endl;
-
         GlobalPoint gem_sh_l1_gp = match_sh.simHitsMeanPosition(gem_sh_l1);
         int nHits = gem_sh_l1.size();
         if (nHits==0) gem_sh_l1_gp = match_sh.simHitsMeanPosition(gem_sh_l2);
-        cout<<"test gem_sh_gp  "<<gem_sh_gp<<" "<<gem_sh_l1_gp<<" "<<gem_sh_gp.phi() - gem_sh_l1_gp.phi()<<endl;
+        // cout<<"test gem_sh_gp  "<<gem_sh_gp<<" "<<gem_sh_l1_gp<<" "<<gem_sh_gp.phi() - gem_sh_l1_gp.phi()<<endl;
 
 
         auto gem_dg = match_gd.digisInSuperChamber(gem_d);
@@ -2315,14 +2299,14 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
         // auto gem_dg_and_gp = match_gd.digiInGEMClosestToCSC(gem_dg, csc_dg_gp);
         // auto best_gem_dg = gem_dg_and_gp.first;
         // GlobalPoint gem_dg_gp = gem_dg_and_gp.second;
-        cout<<"test gem_dg_gp  "<<gem_dg_gp<<" "<<gem_sh_gp.phi() - gem_dg_gp.phi()<<endl;
+        // cout<<"test gem_dg_gp  "<<gem_dg_gp<<" "<<gem_sh_gp.phi() - gem_dg_gp.phi()<<endl;
 
         auto gem_pads = match_gd.padsInSuperChamber(gem_d);
         GlobalPoint gem_pad_gp = match_gd.digisMeanPosition(gem_pads);
         // auto gem_pad_and_gp = match_gd.digiInGEMClosestToCSC(gem_pads, csc_dg_gp);
         // auto best_gem_pad = gem_pad_and_gp.first;
         // GlobalPoint gem_pad_gp = gem_pad_and_gp.second;
-        cout<<"test gem_pad_gp  "<<gem_pad_gp<<" "<<gem_pad_gp.phi() - gem_pad_gp.phi()<<endl;
+        // cout<<"test gem_pad_gp  "<<gem_pad_gp<<" "<<gem_pad_gp.phi() - gem_pad_gp.phi()<<endl;
 
         auto gem_rh_l1 = match_gemrh.recHitsInChamber(gem_id_l1.rawId());
         auto gem_rh_l2 = match_gemrh.recHitsInChamber(gem_id_l2.rawId());
@@ -2330,8 +2314,8 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
         // auto gem_rechits = match_gemrh.recHitsInSuperChamber(gem_d);
         GlobalPoint gem_rh_gp_l1 = match_gemrh.recHitMeanPosition(gem_rh_l1);
         GlobalPoint gem_rh_gp_l2 = match_gemrh.recHitMeanPosition(gem_rh_l2);
-        std::cout << "gem_rh_gp_l1 " << gem_rh_gp_l1 << std::endl;
-        std::cout << "gem_rh_gp_l2 " << gem_rh_gp_l2 << std::endl;
+        // std::cout << "gem_rh_gp_l1 " << gem_rh_gp_l1 << std::endl;
+        // std::cout << "gem_rh_gp_l2 " << gem_rh_gp_l2 << std::endl;
         if (gem_rh_l1.size()==0) gem_rh_gp_l1 = gem_rh_gp_l2;
 
         if (gem_sh.size() == 0 || gem_dg.size() == 0 || gem_pads.size() == 0) continue;
@@ -2349,6 +2333,7 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
 
         dtrk_.odd = is_odd;
         dtrk_.chamber = csc_id.chamber();
+        dtrk_.ring = csc_id.ring();
         dtrk_.endcap = csc_id.endcap();
         dtrk_.station = csc_id.station();
         //        dtrk_.roll = id_of_best_gem.roll();
@@ -2357,14 +2342,16 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
         dtrk_.gem_sh_phi = gem_sh_gp.phi();
 
         dtrk_.dphi_gem_sh_csc_sh = deltaPhi(csc_sh_gp.phi(), gem_sh_gp.phi());
+        // std::cout<< "csc_sh_l1_gp.phi() " << csc_sh_l1_gp.phi() << " " 
+        //          << "gem_sh_l1_gp.phi() " << gem_sh_l1_gp.phi() << std::endl;
         dtrk_.dphi_gem_sh_l1_csc_sh_l1 = deltaPhi(csc_sh_l1_gp.phi(), gem_sh_l1_gp.phi());
         dtrk_.dphi_gem_dg_csc_dg = deltaPhi(csc_dg_gp.phi(), gem_dg_gp.phi());
         if (std::abs(csc_lct_gp.z()) > 0.001) {
           dtrk_.dphi_gem_pad_csc_lct = deltaPhi(csc_lct_gp.phi(), gem_pad_gp.phi());
         }
-        //          dtrk_.dphi_gem_rh_csc_seg_YE1 =;
+        dtrk_.dphi_gem_rh_csc_seg = 99;
         if (segments.size()>0){
-          auto segment = segments[0];
+          auto segment = segments[iSegmentBest];
           GlobalPoint csc_seg_gp = match_cscrh.globalPoint(segment);
           dtrk_.dphi_gem_rh_csc_seg = deltaPhi(csc_seg_gp.phi(), gem_rh_gp_l1.phi());
         }
@@ -2436,6 +2423,7 @@ void GEMCSCAnalyzer::bookSimTracksDeltaTree()
   tree_delta_->Branch("chamber", &dtrk_.chamber);
   tree_delta_->Branch("endcap", &dtrk_.endcap);
   tree_delta_->Branch("roll", &dtrk_.roll);
+  tree_delta_->Branch("ring", &dtrk_.ring);
   tree_delta_->Branch("bend", &dtrk_.bend);
   tree_delta_->Branch("pt", &dtrk_.pt);
   tree_delta_->Branch("eta", &dtrk_.eta);
