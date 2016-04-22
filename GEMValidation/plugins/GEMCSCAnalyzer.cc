@@ -1684,22 +1684,28 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
     }
   }
   
-
   // GEM rechits
   for(auto d: match_gem_rh.chamberIds())
   {
     GEMDetId id(d);
+    if (id.station() == 2) continue;
+
     int MEStation;
     if (id.station() == 3) MEStation = 2;
-    else if (id.station() == 2) continue;
     else MEStation = id.station();
-
+    
     const int st(detIdToMEStation(MEStation,id.ring()));
     if (stations_to_use_.count(st) == 0) continue;
 
     const bool odd(id.chamber()%2==1);
     if (odd) etrk_[st].has_gem_rh |= 1;
     else etrk_[st].has_gem_rh |= 2;
+
+    // case GE1/1
+    if (st==2 or st==3) {
+      if (odd) etrk_[1].has_gem_rh |= 1;
+      else etrk_[1].has_gem_rh |= 2;
+    }
   }
 
   // RPC rechits
