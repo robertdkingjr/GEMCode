@@ -15,7 +15,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorOpposite_cfi')
 process.load('TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAlong_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -33,7 +33,7 @@ process = useInputDir(process, Inputdir)
 
 process.TFileService = cms.Service("TFileService",
     #fileName = cms.string("out_ana_DarkSUSY_mH_125_mGammaD_20000_cT_100_14TeV_PU140_HLT_fullScope.root")
-    fileName = cms.string("out_ana_elehits.test.root")
+    fileName = cms.string("out_ana_elehits.root")
 )
 
 ## global tag for upgrade studies

@@ -18,6 +18,49 @@ def draw_occ(target_dir, c_title, ext, t, title, h_name, h_bins, to_draw, cut, o
   h.SetLineWidth(2)
   h.SetLineColor(kBlue)
   h.Draw(opt)
+  gPad.SetLeftMargin(0.15); ##15 per cent of pad for left margin, default is 10% 
+  h.GetYaxis().SetTitleOffset(1.5); 
+  c.SaveAs(target_dir + c_title + ext)
+
+def draw_occ_logx(target_dir, c_title, ext, t, title, h_name, h_bins, to_draw, cut, opt = ""):
+  gStyle.SetStatStyle(0)
+  gStyle.SetOptStat(1110)
+  c = TCanvas("c","c",800,600)
+  c.Clear()
+  t.Draw(to_draw + ">>" + h_name + h_bins, cut)
+  h = TH2F(gDirectory.Get(h_name))
+  if not h:
+    sys.exit('h does not exist')
+  h = TH2F(h.Clone(h_name))
+  h.SetTitle(title)
+  h.SetLineWidth(2)
+  h.SetLineColor(kBlue)
+  h.Draw(opt)
+  gPad.SetLeftMargin(0.15); ##15 per cent of pad for left margin, default is 10% 
+  gPad.SetLogx(1)
+  h.GetYaxis().SetTitleOffset(1.5); 
+  c.SaveAs(target_dir + c_title + ext)
+
+def draw_occ_fit(target_dir, c_title, ext, t, title, h_name, h_bins, to_draw, cut, opt = ""):
+  gStyle.SetStatStyle(0)
+  gStyle.SetOptStat(1110)
+  c = TCanvas("c","c",800,600)
+  c.Clear()
+  t.Draw(to_draw + ">>" + h_name + h_bins, cut)
+  h = TH2F(gDirectory.Get(h_name))
+  if not h:
+    sys.exit('h does not exist')
+  h = TH2F(h.Clone(h_name))
+  h.SetTitle(title)
+#  h.SetLineWidth(2)
+#  h.SetLineColor(kBlue)
+  pp = h.ProfileX(); 
+#  pp.SetMarkerSize()
+  pp.SetMarkerStyle(34)
+  pp.SetMarkerColor(kBlack)
+  pp.SetLineColor(kBlack)
+  h.Draw(opt)
+  pp.Draw("s same")
   c.SaveAs(target_dir + c_title + ext)
 
 def draw_1D(target_dir, c_title, ext, t, title, h_name, h_bins, to_draw, cut, opt = ""):

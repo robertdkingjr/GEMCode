@@ -2211,12 +2211,13 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
       auto csc_sh_l6 = match_sh.hitsInDetId(csc_id_l6.rawId());
 
       GlobalPoint csc_sh_l1_gp = match_sh.simHitsMeanPosition(csc_sh_l1);
-      GlobalPoint csc_sh_l2_gp = match_sh.simHitsMeanPosition(csc_sh_l2);
+      // GlobalPoint csc_sh_l2_gp = match_sh.simHitsMeanPosition(csc_sh_l2);
       GlobalPoint csc_sh_l3_gp = match_sh.simHitsMeanPosition(csc_sh_l3);
       GlobalPoint csc_sh_l4_gp = match_sh.simHitsMeanPosition(csc_sh_l4);
-      GlobalPoint csc_sh_l5_gp = match_sh.simHitsMeanPosition(csc_sh_l5);
-      GlobalPoint csc_sh_l6_gp = match_sh.simHitsMeanPosition(csc_sh_l6);
-      
+      // GlobalPoint csc_sh_l5_gp = match_sh.simHitsMeanPosition(csc_sh_l5);
+      // GlobalPoint csc_sh_l6_gp = match_sh.simHitsMeanPosition(csc_sh_l6);
+  
+      /*    
       if (csc_sh_l1.size()==0) 
         csc_sh_l1_gp = csc_sh_l2_gp;
       if (csc_sh_l1.size()==0 and csc_sh_l2.size()==0) 
@@ -2227,6 +2228,12 @@ void GEMCSCAnalyzer::analyzeTrackChamberDeltas(SimTrackMatchManager& match, int 
         csc_sh_l1_gp = csc_sh_l5_gp;
       if (csc_sh_l1.size()==0 and csc_sh_l2.size()==0 and csc_sh_l3.size()==0 and csc_sh_l4.size()==0 and csc_sh_l5.size()==0) 
         csc_sh_l1_gp = csc_sh_l6_gp;
+      */
+
+      // pick the average position between L3 and L4 for simhit global position
+      csc_sh_l1_gp = GlobalPoint((csc_sh_l3_gp.x() + csc_sh_l4_gp.x())/2.,
+                                 (csc_sh_l3_gp.y() + csc_sh_l4_gp.y())/2.,
+                                 (csc_sh_l3_gp.z() + csc_sh_l4_gp.z())/2.);
 
       // cout<<"test csc_sh_gp  "<<csc_sh_gp<<" "<<csc_sh_l1_gp<<" "<<csc_sh_gp.phi() - csc_sh_l1_gp.phi()<<endl;
         
