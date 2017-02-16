@@ -10,7 +10,7 @@ def randomizeMuonGun(process):
     ## filter for sim level
     process.genMuonsGEM = cms.EDFilter("CandViewSelector",
         src = cms.InputTag("genMuons"),
-        cut = cms.string("pt > 2 & abs(eta)<2.5 & abs(eta)>1.5"),
+        cut = cms.string("pt > 2 & abs(eta)<2.5 & abs(eta)>1.2"),
         filter = cms.bool(True)
     )
 
