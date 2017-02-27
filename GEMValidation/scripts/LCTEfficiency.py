@@ -57,9 +57,11 @@ def makeChain(treename,filedir):
 
 
 # displacedMuonDir = '/eos/uscms/store/user/tahuang/DispalcedMuonGun_1M_FlatPt1_50_FlatDxy0_50CM_GEN_SIM_CMSSW620SLHC/'
-displacedMuonDir = '/eos/uscms/store/user/tahuang/DispalcedMuonGun_1M_FlatPt1_50_FlatDxy0_50CM_GEN_SIM_CMSSW620SLHC_v3/GEMCSCAna_DisplacedMuonGun/170219_224752/0000/'
+# displacedMuonDir = '/eos/uscms/store/user/tahuang/DispalcedMuonGun_1M_FlatPt1_50_FlatDxy0_50CM_GEN_SIM_CMSSW620SLHC_v3/GEMCSCAna_DisplacedMuonGun/170219_224752/0000/'
 # promptMuonDir = '/eos/uscms/store/user/tahuang/SLHC23_patch1_2023Muon_gen_sim_Pt2_50_1M/GEMCSCAna_ctau0_Pt2_50_20170131/170201_015620/0000/'
 promptMuonDir = '/eos/uscms/store/user/tahuang/SLHC23_patch1_2023Muon_gen_sim_Pt2_50_1M/GEMCSCAna_ctau0_Pt2_50_20170131/170218_213142/0000/'
+
+displacedMuonDir = '/eos/uscms/store/user/tahuang/DisplacedMuonGun_1M_FlatPt1_50_FlatDxy0_50CM_GEN_SIM_CMSSW620SLHC_v5/GEMCSC_Ana_displacedMuonGun_2023Muon_20170222_v5/170223_195129/0000/'
 
 treenamebase = "GEMCSCAnalyzer/trk_eff_CSC_"
 
@@ -109,9 +111,9 @@ def makeEfficiencies(xvars,stations,bins,num,den,suffix,label):
             b1.SetTitle(" "*12 +stn+" efficiency for "+label+" "*14 + "CMS Phase-II Simulation Preliminary")
             b1.SetStats(0)
             
-            b1.Draw("e3")
-            e1.Draw("e3same")
-            e2.Draw("e3same")
+            b1.Draw("")
+            e1.Draw("same")
+            e2.Draw("same")
                 
             legend = TLegend(0.20,0.15,.89,0.42, "", "brNDC")
             legend.SetBorderSize(0)
@@ -121,9 +123,9 @@ def makeEfficiencies(xvars,stations,bins,num,den,suffix,label):
             legend.AddEntry(e2,"Displaced Muon","f")
             # legend.AddEntry(e4,"lastest version, P_{T} < 15 GeV","f")
             # legend.AddEntry(e3,"before Jose's correction, P_{T} > 10 GeV","f")
-            legend.Draw("e3same")
+            legend.Draw("same")
     
-            c1.SaveAs("LCT_"+stn+"_has_sh_"+variable+"_"+suffix+".png")
+            c1.SaveAs("LCT_"+stn+"_has_sh_"+variable+"_"+suffix+"_Feb_27_1550.png")
     
             del e1,e2
             del h1,h2,h3,h4
