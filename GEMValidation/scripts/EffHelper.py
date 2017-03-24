@@ -6,6 +6,7 @@ import datetime as dt
 
 # 'YYYY-MM-DD'
 today = dt.date.today().isoformat()
+time = dt.date.today().strftime("%H_%M")
 
 promptMuonDir = '/eos/uscms/store/user/tahuang/SLHC23_patch1_2023Muon_gen_sim_Pt2_50_1M/GEMCSCAna_ctau0_Pt2_50_20170131/170218_213142/0000/'
 
@@ -54,7 +55,7 @@ def makeChain(treename,filedir):
 # dens = denominator (cuts) for each comparison
 # labels = legend title and indentifier for each comparison
 
-def makeAnyEff(title,treenamebase,stations,xvars,xbinlist,samples,nums,dens,labels):
+def makeAnyEff(title,treenamebase,stations,xvars,xbinlist,samples,nums,dens,labels,analyze=None):
     if len(xvars) != len(xbinlist):
         print 'X-Variable and Bin lists must be same length!'
         exit
@@ -136,14 +137,113 @@ def makeAnyEff(title,treenamebase,stations,xvars,xbinlist,samples,nums,dens,labe
             legend.SetFillColor(kWhite)
             legend.SetHeader(" "*5+"Efficiency")
             for entry in range(len(labels)):
-                legend.AddEntry(tefflist[entry],labels[entry],"f") # VERIFY
+                legend.AddEntry(tefflist[entry],labels[entry],"l") # VERIFY
             legend.Draw("same")
     
-            c1.SaveAs("Eff_"+title+"_"+stn+"_"+xvars[index]+"_"+labels[entry]+"_"+today+".png")
+            c1.SaveAs("/Eff_"+title+"_"+str(len(labels))+"_"+stn+"_"+xvars[index]+"_"+today+"_"+time+".png")
     
             del b1
             
-        
+# title = Full title of plots
+# treenamebase = path to samples within root file tree (excluding station #)
+# stations = loop over samples from different stations (ME11,ME21,etc.)
+# avars = x-variable to analyze
+# avarbins = bins for each x-variable -> [num,min,max]
+# samples = data sets to pull from
+# cuts = cuts made on each data set
+def analyzePlots(title,treenamebase,stations,avars,avarbins,samples,cuts,labels):
+    if len(avars) != len(avarbins):
+        print 'Analyzed X-Variablea and Bin lists must be same length!'
+        exit
+    elif len(samples) != len(cuts):
+        print 'Samples list must be same length as *cuts*,labels!'
+        exit
+    elif len(samples) != len(labels):
+        print 'Samples list must be same length as cuts,*labels*!'
+        exit
+
+    for stn in stations:
+        treename = treenamebase+stn
+
+        # make list of chains -> each for different comparison
+        chainlist = []
+        entrylist = [] 
+        for index in range(len(samples)):
+            newChain = makeChain(treename,samples[index])
+            print 'Chain created for',labels[index]
+            chainlist.append(newChain)
+            numEntries = newChain.GetEntries()
+            print 'Number of entries:',numEntries
+            entrylist.append(numEntries)
+
+        # index -> avars,avarbins
+        for index in range(len(avars)):
+            print 'Station:',stn
+            print 'X-variable:',avars[index]
+            print 'Bins:',avarbins[index]
+            print ''
+
+            c1 = TCanvas()
+            c1.SetGridx()
+            c1.SetGridy()
+            c1.SetTickx()
+            c1.SetTicky()
+            gStyle.SetOptFit(0111)
+            gStyle.SetOptStat(111111)
+            
+            th1flist = []       # store histograms
+            th1stack = THStack("th1stack"," "*12 +title+" "*14 + "CMS Phase-II Simulation Preliminary");
+            # sample -> samples,cuts,labels
+            for sample in range(len(samples)):
+                print 'Cut:',cuts[sample]
+                print 'Label:',labels[sample]
+                print ''
+
+                h1 = TH1F(labels[sample],labels[sample],*avarbins[index])
+                chainlist[sample].Draw(avars[index]+">>"+labels[sample],cuts[sample])
+                h1.Scale(1.0/h1.GetEntries())
+
+                # h1 = TH1F("h1_"+str(sample),"h1_"+str(sample),*avarbins[index])
+                # h2 = TH1F("h2_"+str(sample),"h2_"+str(sample),*avarbins[index])
+                # chainlist[sample].Draw(avars[index]+">>h1_"+str(sample),dens[sample])
+                # chainlist[sample].Draw(avars[index]+">>h2_"+str(sample),nums[sample])
+
+                # h1.SetFillColor(sample+2)
+                h1.SetMarkerColor(sample+2)
+                h1.SetMarkerStyle(sample+20)
+                th1flist.append(h1)
+                th1stack.Add(h1)
+                del h1 # data stored in lists
+    
+            # b1 = TH1F("b1","b1",*avarbins[index])
+            # # b1.GetYaxis().SetRangeUser(0.50,1.05)
+            # # b1.GetYaxis().SetNdivisions(520)
+            # # b1.GetYaxis().SetTitle("Efficiency")
+            # b1.GetXaxis().SetTitle("Simulated muon "+avars[index])
+            # b1.SetTitle(" "*12 +title+" "*14 + "CMS Phase-II Simulation Preliminary")
+            # b1.SetStats(0)
+            # b1.Draw("")
+            # for hist in th1flist:
+            #     hist.Draw("psame")
+
+            th1stack.Draw("nostack,p")
+                
+            # legend = TLegend(0.20,0.15,0.89,0.42, "", "brNDC")
+            # legend = TLegend(0.1,0.7,0.48,0.9, "", "brNDC")
+            # legend.SetBorderSize(0)
+            # legend.SetFillStyle(0)
+            # legend.SetHeader(" "*5+"Samples")
+            # for entry in range(len(labels)):
+            #     legend.AddEntry(th1flist[entry],labels[entry],"f") # VERIFY
+            # legend.Draw("same")
+
+            gPad.BuildLegend(0.25,0.25,0.45,0.55,"")
+    
+            c1.SaveAs(title+"_"+str(len(labels))+"_"+stn+"_"+avars[index]+"_"+today+"_"+time+".png")
+    
+            # del b1    
+
+
 
 def makeEfficiencies(xvars,stations,binlist,num,den,suffix,label):
     treenamebase = "GEMCSCAnalyzer/trk_eff_CSC_"        

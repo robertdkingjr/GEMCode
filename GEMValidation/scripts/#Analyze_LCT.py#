@@ -1,0 +1,31 @@
+from ROOT import *
+import os
+import datetime
+from EffHelper import *
+
+gROOT.SetBatch(1)
+gStyle.SetStatW(0.07)
+gStyle.SetStatH(0.06)
+
+gStyle.SetOptStat(0)
+gStyle.SetTitleStyle(0)
+gStyle.SetTitleAlign(13) ## coord in top left
+gStyle.SetTitleX(0.)
+gStyle.SetTitleY(1.)
+gStyle.SetTitleW(1)
+gStyle.SetTitleH(0.058)
+gStyle.SetTitleBorderSize(0)
+
+gStyle.SetPadLeftMargin(0.126)
+gStyle.SetPadRightMargin(0.04)
+gStyle.SetPadTopMargin(0.06)
+gStyle.SetPadBottomMargin(0.13)
+
+gStyle.SetMarkerStyle(1)
+
+
+promptMuonDir = '/eos/uscms/store/user/tahuang/SLHC23_patch1_2023Muon_gen_sim_Pt2_50_1M/GEMCSCAna_ctau0_Pt2_50_20170131/170218_213142/0000/'
+
+displacedMuonDir = '/eos/uscms/store/user/tahuang/DisplacedMuonGun_1M_FlatPt1_50_FlatDxy0_50CM_GEN_SIM_CMSSW620SLHC_v5/GEMCSC_Ana_displacedMuonGun_2023Muon_20170222_v5/170223_195129/0000/'
+
+

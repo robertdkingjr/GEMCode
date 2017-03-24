@@ -50,86 +50,73 @@ num_lct_dxy3050 = "has_csc_sh>0 && ((abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_o
 
 # Only odd csc chambers, abs(dxy)
 den_lct_dxy05_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)<5"
-num_lct_dxy05_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)<5 && has_lct>0"
+num_lct_dxy05_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)<5 && (has_lct&1)>0"
 den_lct_dxy1020_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20"
-num_lct_dxy1020_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20 && has_lct>0"
+num_lct_dxy1020_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20 && (has_lct&1)>0"
 den_lct_dxy3050_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>30 && abs(genGdMu_dxy)<50"
-num_lct_dxy3050_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>30 && abs(genGdMu_dxy)<50 && has_lct>0"
+num_lct_dxy3050_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>30 && abs(genGdMu_dxy)<50 && (has_lct&1)>0"
 
 # Add Lxy,Lz requirements
 den_lct_dxy05_odd_lcuts = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)<5 && abs(genGdMu_vz)<200 && genGdMu_lxy<200"
-num_lct_dxy05_odd_lcuts = den_lct_dxy05_odd_lcuts+" && has_lct>0"
+num_lct_dxy05_odd_lcuts = den_lct_dxy05_odd_lcuts+" && (has_lct&1)>0"
 den_lct_dxy1020_odd_lcuts = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20 && abs(genGdMu_vz)<200 && genGdMu_lxy<200"
-num_lct_dxy1020_odd_lcuts = den_lct_dxy1020_odd_lcuts+" && has_lct>0"
+num_lct_dxy1020_odd_lcuts = den_lct_dxy1020_odd_lcuts+" && (has_lct&1)>0"
 den_lct_dxy3050_odd_lcuts = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>30 && abs(genGdMu_dxy)<50 && abs(genGdMu_vz)<200 && genGdMu_lxy<200"
-num_lct_dxy3050_odd_lcuts = den_lct_dxy3050_odd_lcuts+" && has_lct>0"
+num_lct_dxy3050_odd_lcuts = den_lct_dxy3050_odd_lcuts+" && (has_lct&1)>0"
 
 
 # 3/3/17 - no L cuts
 
 den_lct_dxy1020_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20"
-num_lct_dxy1020_odd = den_lct_dxy1020_odd+" && has_lct>0"
+num_lct_dxy1020_odd = den_lct_dxy1020_odd+" && (has_lct&1)>0"
 den_lct_dxy2050_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>20 && abs(genGdMu_dxy)<50"
-num_lct_dxy2050_odd = den_lct_dxy2050_odd+" && has_lct>0"
+num_lct_dxy2050_odd = den_lct_dxy2050_odd+" && (has_lct&1)>0"
 
 den_lct_dxy1020_even = "has_csc_sh>0 && (abs(eta_cscsh_even) > 1.6 && abs(eta_cscsh_even) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20"
-num_lct_dxy1020_even = den_lct_dxy1020_even+" && has_lct>0"
+num_lct_dxy1020_even = den_lct_dxy1020_even+" && (has_lct&2)>0"
 den_lct_dxy2050_even = "has_csc_sh>0 && (abs(eta_cscsh_even) > 1.6 && abs(eta_cscsh_even) < 2.4) && abs(genGdMu_dxy)>20 && abs(genGdMu_dxy)<50"
-num_lct_dxy2050_even = den_lct_dxy2050_even+" && has_lct>0"
+num_lct_dxy2050_even = den_lct_dxy2050_even+" && (has_lct&2)>0"
 
 den_lct_prompt_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4)"
-num_lct_prompt_odd = den_lct_prompt_odd+" && has_lct>0"
+num_lct_prompt_odd = den_lct_prompt_odd+" && (has_lct&1)>0"
 
 den_lct_prompt_even = "has_csc_sh>0 && (abs(eta_cscsh_even) > 1.6 && abs(eta_cscsh_even) < 2.4)"
-num_lct_prompt_even = den_lct_prompt_even+" && has_lct>0"
+num_lct_prompt_even = den_lct_prompt_even+" && (has_lct&2)>0"
 
 
 # CLCT
 den_clct_dxy1020_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20"
-num_clct_dxy1020_odd = den_clct_dxy1020_odd+" && has_clct>0"
+num_clct_dxy1020_odd = den_clct_dxy1020_odd+" && (has_clct&1)>0"
 den_clct_dxy2050_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>20 && abs(genGdMu_dxy)<50"
-num_clct_dxy2050_odd = den_clct_dxy2050_odd+" && has_clct>0"
+num_clct_dxy2050_odd = den_clct_dxy2050_odd+" && (has_clct&1)>0"
 
 den_clct_dxy1020_even = "has_csc_sh>0 && (abs(eta_cscsh_even) > 1.6 && abs(eta_cscsh_even) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20"
-num_clct_dxy1020_even = den_clct_dxy1020_even+" && has_clct>0"
+num_clct_dxy1020_even = den_clct_dxy1020_even+" && (has_clct&2)>0"
 den_clct_dxy2050_even = "has_csc_sh>0 && (abs(eta_cscsh_even) > 1.6 && abs(eta_cscsh_even) < 2.4) && abs(genGdMu_dxy)>20 && abs(genGdMu_dxy)<50"
-num_clct_dxy2050_even = den_clct_dxy2050_even+" && has_clct>0"
+num_clct_dxy2050_even = den_clct_dxy2050_even+" && (has_clct&2)>0"
 
 den_clct_prompt_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4)"
-num_clct_prompt_odd = den_clct_prompt_odd+" && has_clct>0"
+num_clct_prompt_odd = den_clct_prompt_odd+" && (has_clct&1)>0"
 
 den_clct_prompt_even = "has_csc_sh>0 && (abs(eta_cscsh_even) > 1.6 && abs(eta_cscsh_even) < 2.4)"
-num_clct_prompt_even = den_clct_prompt_even+" && has_clct>0"
+num_clct_prompt_even = den_clct_prompt_even+" && (has_clct&2)>0"
 
 # ALCT
 den_alct_dxy1020_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20"
-num_alct_dxy1020_odd = den_alct_dxy1020_odd+" && has_alct>0"
+num_alct_dxy1020_odd = den_alct_dxy1020_odd+" && (has_alct&1)>0"
 den_alct_dxy2050_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4) && abs(genGdMu_dxy)>20 && abs(genGdMu_dxy)<50"
-num_alct_dxy2050_odd = den_alct_dxy2050_odd+" && has_alct>0"
+num_alct_dxy2050_odd = den_alct_dxy2050_odd+" && (has_alct&1)>0"
 
 den_alct_dxy1020_even = "has_csc_sh>0 && (abs(eta_cscsh_even) > 1.6 && abs(eta_cscsh_even) < 2.4) && abs(genGdMu_dxy)>10 && abs(genGdMu_dxy)<20"
-num_alct_dxy1020_even = den_alct_dxy1020_even+" && has_alct>0"
+num_alct_dxy1020_even = den_alct_dxy1020_even+" && (has_alct&2)>0"
 den_alct_dxy2050_even = "has_csc_sh>0 && (abs(eta_cscsh_even) > 1.6 && abs(eta_cscsh_even) < 2.4) && abs(genGdMu_dxy)>20 && abs(genGdMu_dxy)<50"
-num_alct_dxy2050_even = den_alct_dxy2050_even+" && has_alct>0"
+num_alct_dxy2050_even = den_alct_dxy2050_even+" && (has_alct&2)>0"
 
 den_alct_prompt_odd = "has_csc_sh>0 && (abs(eta_cscsh_odd) > 1.6 && abs(eta_cscsh_odd) < 2.4)"
-num_alct_prompt_odd = den_alct_prompt_odd+" && has_alct>0"
+num_alct_prompt_odd = den_alct_prompt_odd+" && (has_alct&1)>0"
 
 den_alct_prompt_even = "has_csc_sh>0 && (abs(eta_cscsh_even) > 1.6 && abs(eta_cscsh_even) < 2.4)"
-num_alct_prompt_even = den_alct_prompt_even+" && has_alct>0"
-
-
-
-pt_bins=[50,0,50]
-eta_bins=[40,1.5,2.5]
-phi_bins=[40,-3.5,3.5]
-dxy_bins=[50,0,50]
-
-#stations=["ME11","ME21","ME31","ME41","ME12","ME13"]
-stations=["ME11"]
-# xvars=["pt","eta","phi","genGdMu_dxy"]
-xvars=["pt","phi","eta_cscsh_odd","eta_cscsh_even"]
-binlist=[pt_bins,phi_bins,eta_bins,eta_bins]
+num_alct_prompt_even = den_alct_prompt_even+" && (has_alct&2)>0"
 
 
 # makeEfficiencies(xvars,stations,binlist,num_lct_dxy1020_odd,den_lct_dxy1020_odd,"dx10_20odd","10<dxy<20, odd cscs")
@@ -166,23 +153,59 @@ simpleNums = [num_lct_prompt_odd,num_lct_dxy1020_odd]
 simpleDens = [den_lct_prompt_odd,den_lct_dxy1020_odd]
 simpleLabels = ['Prompt Muon','Displaced Muon 10<dxy<20']
 
+
+dxycutlabels = ['Prompt Muon','Displaced Muon 10<dxy<20','Displaced Muon 20<dxy<50']
+
+pt_bins=[50,0,50]
+eta_bins=[40,1.5,2.5]
+phi_bins=[40,-3.5,3.5]
+dxy_bins=[50,0,50]
+quality_bins=[16,0,15]
+pattern_bins=[16,0,15]          # VERIFY
+bend_bins=[40,-5,5]
+
+
+treebase = "GEMCSCAnalyzer/trk_eff_CSC_"
+#stations=["ME11","ME21","ME31","ME41","ME12","ME13"]
+stations=["ME11"]
+# xvars=["pt","eta","phi","genGdMu_dxy"]
+# xvars=["pt","phi","eta_cscsh_odd","eta_cscsh_even"]
+# binlist=[pt_bins,phi_bins,eta_bins,eta_bins]
+
+# 3/5/17 Checking CLCT Quality
+bendvars=["bend_lct_even","bend_lct_odd"]
+bendbinlist=[bend_bins,bend_bins]
+qualvars=["quality_even","quality_odd"]
+qualbinlist=[quality_bins,quality_bins]
+# pattvars=[]
+
+# makeAnyEff('LCT_SimHits_CLCTBending',treebase,stations,bendvars,bendbinlist,samples3,numerators_even,denominators_even,dxycutlabels)
+# makeAnyEff('LCT_SimHits_CLCTQuality',treebase,stations,qualvars,qualbinlist,samples3,numerators_even,denominators_even,dxycutlabels)
+# makeAnyEff('LCT_SimHits_CLCTPattern',treebase,stations,bendvars,bendbinlist,samples3,numerators_even,denominators_even,dxycutlabels)
+
+
+# 3/10/17 - Looking into bending/quality of LCTs
+analyzePlots("Bending angle for LCTs in ME11",treebase,stations,bendvars,bendbinlist,samples3,numerators_even,dxycutlabels)
+analyzePlots("Quality for LCTs in ME11",treebase,stations,qualvars,qualbinlist,samples3,numerators_even,dxycutlabels)
+
+
 # makeAnyEff('LCT SimHits',"GEMCSCAnalyzer/trk_eff_CSC_",stations,xvars,binlist,samples,simpleNums,simpleDens,simpleLabels)
 
 
-makeAnyEff('LCT_SimHits-even_CLCT',"GEMCSCAnalyzer/trk_eff_CSC_",stations,xvars,binlist,samples3,numerators_clct_even,denominators_clct_even,simpleLabels+['Displaced Muon 20<dxy<50'])
-makeAnyEff('LCT_SimHits-odd_CLCT',"GEMCSCAnalyzer/trk_eff_CSC_",stations,xvars,binlist,samples3,numerators_clct_odd,denominators_clct_odd,simpleLabels+['Displaced Muon 20<dxy<50'])
+# makeAnyEff('LCT_SimHits-even_CLCT',"GEMCSCAnalyzer/trk_eff_CSC_",stations,xvars,binlist,samples3,numerators_clct_even,denominators_clct_even,simpleLabels+['Displaced Muon 20<dxy<50'])
+# makeAnyEff('LCT_SimHits-odd_CLCT',"GEMCSCAnalyzer/trk_eff_CSC_",stations,xvars,binlist,samples3,numerators_clct_odd,denominators_clct_odd,simpleLabels+['Displaced Muon 20<dxy<50'])
 
-makeAnyEff('LCT_SimHits-even_ALCT',"GEMCSCAnalyzer/trk_eff_CSC_",stations,xvars,binlist,samples3,numerators_alct_even,denominators_alct_even,simpleLabels+['Displaced Muon 20<dxy<50'])
-makeAnyEff('LCT_SimHits-odd_ALCT',"GEMCSCAnalyzer/trk_eff_CSC_",stations,xvars,binlist,samples3,numerators_alct_odd,denominators_alct_odd,simpleLabels+['Displaced Muon 20<dxy<50'])
+# makeAnyEff('LCT_SimHits-even_ALCT',"GEMCSCAnalyzer/trk_eff_CSC_",stations,xvars,binlist,samples3,numerators_alct_even,denominators_alct_even,simpleLabels+['Displaced Muon 20<dxy<50'])
+# makeAnyEff('LCT_SimHits-odd_ALCT',"GEMCSCAnalyzer/trk_eff_CSC_",stations,xvars,binlist,samples3,numerators_alct_odd,denominators_alct_odd,simpleLabels+['Displaced Muon 20<dxy<50'])
 
 
 # makeCustomEfficiencies(xvars,stations,binlist,numerators_even,denominators_even,"variabledxy_even","variabledxy_even")
 
-makeCustomEfficiencies(xvars,stations,binlist,numerators_clct_even,denominators_clct_even,"variabledxy_clct_even","variabledxy_clct_even")
-makeCustomEfficiencies(xvars,stations,binlist,numerators_alct_even,denominators_alct_even,"variabledxy_alct_even","variabledxy_alct_even")
+# makeCustomEfficiencies(xvars,stations,binlist,numerators_clct_even,denominators_clct_even,"variabledxy_clct_even","variabledxy_clct_even")
+# makeCustomEfficiencies(xvars,stations,binlist,numerators_alct_even,denominators_alct_even,"variabledxy_alct_even","variabledxy_alct_even")
 
-makeCustomEfficiencies(xvars,stations,binlist,numerators_clct_odd,denominators_clct_odd,"variabledxy_clct_odd","variabledxy_clct_odd")
-makeCustomEfficiencies(xvars,stations,binlist,numerators_alct_odd,denominators_alct_odd,"variabledxy_alct_odd","variabledxy_alct_odd")
+# makeCustomEfficiencies(xvars,stations,binlist,numerators_clct_odd,denominators_clct_odd,"variabledxy_clct_odd","variabledxy_clct_odd")
+# makeCustomEfficiencies(xvars,stations,binlist,numerators_alct_odd,denominators_alct_odd,"variabledxy_alct_odd","variabledxy_alct_odd")
 
 
 
@@ -220,127 +243,3 @@ makeCustomEfficiencies(xvars,stations,binlist,numerators_alct_odd,denominators_a
         
 # displacedChain = makeChain(treename,displacedMuonDir)
 
-# Example
-# treename = "GEMCSCAnalyzer/trk_eff_ME31"
-# den = "has_csc_sh>0 && pt >10"
-# num = "has_csc_sh>0 && has_lct>0 && pt>10"
-# den_pt15 = "has_csc_sh>0 && pt <15"
-# num_pt15 = "has_csc_sh>0 && has_lct>0 && pt<15"
-
-# c1 = TCanvas()
-# c1.SetGridx()
-# c1.SetGridy()
-# c1.SetTickx()
-# c1.SetTicky()
-
-# h1 = TH1F("h1","h1",50,0,50)
-# h2 = TH1F("h2","h2",50,0,50)
-# promptChain.Draw("pt>>h1",den)
-# promptChain.Draw("pt>>h2",num)
-# e = TEfficiency(h2,h1)
-# e.Draw("Efficiency")
-
-
-# b1 = TH1F("b1","b1",50,0,50)
-# # b1.GetYaxis().SetRangeUser(0.50,1.02)
-# # b1.GetYaxis().SetNdivisions(520)
-# b1.GetYaxis().SetTitle("Efficiency")
-# b1.GetXaxis().SetTitle("Simulated muon #eta")
-# # b1.SetTitle(" "*12 +"YE3/1 stub reconstruction"+" "*14 + "CMS Phase-II Simulation Preliminary")
-# b1.SetStats(0)
-
-# b1.Draw()
-# e.Draw("same")
-
-# c1.SaveAs("LCT_has_sh_pt.png")
-
-# t = promptChain.Get(treename)
-# h1 = TH1F("h1","h1",40,1.5,2.5)
-# t.Draw("(-eta) >> h1",den)
-# h2 = TH1F("h2","h2",40,1.5,2.5)
-# t.Draw("(-eta) >> h2",num)
-# e = TEfficiency(h2,h1)
-
-# e.Draw("e")
-# promptChain.Draw()
-
-
-# c1 = TCanvas()
-# c1.SetGridx()
-# c1.SetGridy()
-# c1.SetTickx()
-# c1.SetTicky()
-
-
-
-
-
-# def getEff(file,dir,den,num):
-#     f = TFile(file)
-#     t = f.Get(dir)
-#     h1 = TH1F("h1","h1",40,1.5,2.5)
-#     t.Draw("(-eta) >> h1",den)
-#     h2 = TH1F("h2","h2",40,1.5,2.5)
-#     t.Draw("(-eta) >> h2",num)
-#     e = TEfficiency(h2,h1)
-#     return e
-
-# b1 = TH1F("b1","b1",40,1.5,2.5)
-# b1.GetYaxis().SetRangeUser(0.50,1.02)
-# b1.GetYaxis().SetNdivisions(520)
-# b1.GetYaxis().SetTitle("Efficiency")
-# b1.GetXaxis().SetTitle("Simulated muon #eta")
-# b1.SetTitle(" "*12 +"YE3/1 stub reconstruction"+" "*14 + "CMS Phase-II Simulation Preliminary")
-# b1.SetStats(0)
-
-# treename = "GEMCSCAnalyzer/trk_eff_ME31"
-# den = "has_csc_sh>0 && pt >10"
-# num = "has_csc_sh>0 && has_lct>0 && pt>10"
-# den_pt15 = "has_csc_sh>0 && pt <15"
-# num_pt15 = "has_csc_sh>0 && has_lct>0 && pt<15"
-# #e2 = getEff("PU140_100k_2019withoutGEM_GEMCSCAna.root",treename,den,num)
-# e3 = getEff("PU140_200k_Pt2-50_2023_GE21dphi_v3_GEMCSC.root",treename,den,num)
-# e2 = getEff("PU140_200k_Pt2-50_GEMCSC_LCTTiming.root",treename,den,num)
-# e4 = getEff("PU140_200k_Pt2-50_GEMCSC_LCTTiming.root",treename,den_pt15,num_pt15)
-# #e4 = getEff("PU140_200k_GE21dphi_v3_GEMCSC_hsfromgem_ana.root",treename,den,num)
-# #e = getEff("PU140_100k_2023_fixeven_GEMCSCAna.root",treename,den,num)
-
-# #e5 = getEff("GSA_GEMCSC_Step2_Com_PU140.root",treename,den,num)
-# #e6 = getEff("GSA_GEMCSC_Step3_Com_PU140.root",treename,den,num)
-# #e7 = getEff("GSA_GEMCSC_Step4_Com_PU140.root",treename,den,num)
-
-# #e1.SetLineWidth(2)
-# #e2.SetLineColor(kRed)
-# #e2.SetLineWidth(2)
-# e3.SetFillColor(kRed)
-# #e3.SetLineWidth(2)
-# e2.SetFillColor(kAzure-1)
-# e4.SetFillColor(kMagenta)
-# b1.Draw("e3")
-# e2.Draw("e3same")
-# e4.Draw("e3same")
-# e3.Draw("e3same")
-
-# legend = TLegend(0.20,0.15,.89,0.42, "", "brNDC")
-# legend.SetBorderSize(0)
-# #legend.SetFillStyle(0)
-# legend.SetFillColor(kWhite)
-# #legend.SetTextSize(0.05)
-# legend.SetHeader(" "*5+"PU140,ILT algorithm")
-# #legend.AddEntry(e1,"CSC SLHC Algorithm (4 hits)","l")
-# #legend.AddEntry(e2,"CSC only SLHC Algorithm in 2019","l")
-# #legend.AddEntry(e3,"GEM-CSC Algorithm in 2023 Jason","l")
-# #legend.AddEntry(e4,"after Jose's correction and bugfixed","f")
-# legend.AddEntry(e2,"latest version, P_{T} > 10 GeV","f")
-# legend.AddEntry(e4,"lastest version, P_{T} < 15 GeV","f")
-# legend.AddEntry(e3,"before Jose's correction, P_{T} > 10 GeV","f")
-# #legend.AddEntry(e7,"GEM-CSC Algorithm (step 4)","l")
-# legend.Draw("same")
-
-# #tex = TLatex(0.25,0.5,"PU140, P\_T > 10Gev")
-# #tex.SetTextSize(0.05)
-# #tex.SetNDC()
-# #tex.Draw("same")
-
-# c1.SaveAs("LCT_100k_ME31_reco_eff_com4_PU140.pdf")
-# c1.SaveAs("LCT_100k_ME31_reco_eff_com4_PU140.png")
